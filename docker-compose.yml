@@ -1,0 +1,12 @@
+services:
+  nextjs:
+    build: .
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+      - "9230:9230"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      NODE_OPTIONS: "--inspect=0.0.0.0:9229"
