@@ -8,24 +8,6 @@
       "command": "npm run dev"
     },
     {
-      "name": "Attach to Docker",
-      "type": "node",
-      "request": "attach",
-      "port": 9230,
-      "address": "0.0.0.0",
-      "sourceMaps": true,
-      "skipFiles": ["<node_internals>/**"],
-      "localRoot": "${workspaceFolder}",
-      "remoteRoot": "/app",
-      "sourceMapPathOverrides": {
-        "/app/.next/server/*": "${workspaceFolder}/.next/server/*"
-      },
-       "resolveSourceMapLocations": [
-          "${workspaceFolder}/**",
-          "!**/node_modules/**"
-        ],
-    },
-    {
       "name": "Next.js: debug client-side",
       "type": "chrome",
       "request": "launch",
