@@ -1,0 +1,2 @@
+NextJS Authentication with password:
+https://medium.com/@sanyamm/complete-guide-password-reset-and-authentication-in-next-js-with-auth-js-nextauth-v5-fcf540b2a8fb

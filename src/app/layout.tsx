@@ -6,6 +6,10 @@ import {
   mantineHtmlProps,
 } from "@mantine/core";
 
+import { Notifications } from "@mantine/notifications";
+
+import { SessionProvider } from "next-auth/react";
+
 export const metadata = {
   title: "My Mantine app",
   description: "I have followed setup instructions carefully",
@@ -13,8 +17,10 @@ export const metadata = {
 
 export default function RootLayout({
   children,
+  session,
 }: {
   children: React.ReactNode;
+  session: any;
 }) {
   return (
     <html lang="en" {...mantineHtmlProps}>
@@ -22,7 +28,12 @@ export default function RootLayout({
         <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body>
-        <MantineProvider defaultColorScheme="auto">{children}</MantineProvider>
+        <SessionProvider session={session}>
+          <MantineProvider defaultColorScheme="auto">
+            <Notifications />
+            {children}
+          </MantineProvider>
+        </SessionProvider>
       </body>
     </html>
   );
