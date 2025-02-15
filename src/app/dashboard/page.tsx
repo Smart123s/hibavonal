@@ -1,24 +1,5 @@
-import { auth } from "@/auth";
-import { Text } from "@mantine/core";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
-  const session = await auth();
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "90vh",
-        flexDirection: "column",
-      }}
-    >
-      <Text style={{ textAlign: "center", fontSize: "4rem" }}>HibaVonal</Text>
-      <Text style={{ textAlign: "center", fontSize: "2rem" }}>
-        {session?.user?.name}
-        {" is logged in"}
-      </Text>
-    </div>
-  );
+  redirect("/dashboard/home");
 }

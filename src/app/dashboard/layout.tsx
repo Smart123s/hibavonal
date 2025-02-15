@@ -6,12 +6,14 @@ import {
   Burger,
   AppShellHeader,
   Group,
-  Skeleton,
   AppShellNavbar,
   AppShellMain,
   Text,
+  NavLink,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function DashboardLayout({
   children,
@@ -19,6 +21,26 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [opened, { toggle }] = useDisclosure();
+  const [activeNav, setActiveNav] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setActiveNav(window.location.pathname.split("/")[2]);
+    }
+  }, []);
+
+  const linksData = ["Home", "Tickets"];
+
+  const links = linksData.map((link) => (
+    <NavLink
+      href={`/dashboard/${link.toLowerCase()}`}
+      label={link}
+      active={activeNav === link.toLowerCase()}
+      onClick={() => setActiveNav(link.toLowerCase())}
+      key={link}
+      component={Link}
+    />
+  ));
 
   return (
     <div>
@@ -45,14 +67,7 @@ export default function DashboardLayout({
             </div>
           </Group>
         </AppShellHeader>
-        <AppShellNavbar p="md">
-          Navbar
-          {Array(15)
-            .fill(0)
-            .map((_, index) => (
-              <Skeleton key={index} h={28} mt="sm" animate={false} />
-            ))}
-        </AppShellNavbar>
+        <AppShellNavbar p="md">{links}</AppShellNavbar>
         <AppShellMain>{children}</AppShellMain>
       </AppShell>
     </div>
