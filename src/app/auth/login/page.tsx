@@ -24,7 +24,7 @@ export default function LoginPage() {
     authenticate,
     null
   );
-  const { data: session, status, update } = useSession();
+  const { status, update } = useSession();
 
   React.useEffect(() => {
     if (state?.success) {
@@ -38,7 +38,7 @@ export default function LoginPage() {
         color: "red",
       });
     }
-  }, [state]);
+  }, [state, update]);
 
   useEffect(() => {
     if (status === "authenticated") {
