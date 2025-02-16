@@ -1,0 +1,14 @@
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./prisma/data/dev.db:/data/sqlite.db
+    environment:
+      NODE_ENV: "production"
+      AUTH_TRUST_HOST: "http://localhost:3000"
+      DATABASE_URL: "file:/data/sqlite.db"
+      AUTH_SECRET: "NLhC0oLs8W1LQcxZBVTUjNA/dN/iC4XGFCK7a3q5ylc=" # Replace this
