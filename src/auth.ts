@@ -2,7 +2,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/prisma"
 import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import { comparePassword } from "./utils/bcrypt";
 
 
 export const {
@@ -32,7 +32,7 @@ export const {
                     throw new CredentialsSignin("Invalid email or password.");
                 }
 
-                const passwordsMatch = await bcrypt.compare(password, user?.password as string);
+                const passwordsMatch = await comparePassword(password, user.password);
 
                 if (!passwordsMatch) {
                     throw new Error("Invalid email or password.");
