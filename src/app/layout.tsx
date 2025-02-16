@@ -17,10 +17,8 @@ export const metadata = {
 
 export default function RootLayout({
   children,
-  session,
 }: {
   children: React.ReactNode;
-  session: any;
 }) {
   return (
     <html lang="en" {...mantineHtmlProps}>
@@ -28,7 +26,7 @@ export default function RootLayout({
         <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body>
-        <SessionProvider session={session}>
+        <SessionProvider>
           <MantineProvider defaultColorScheme="auto">
             <Notifications />
             {children}
