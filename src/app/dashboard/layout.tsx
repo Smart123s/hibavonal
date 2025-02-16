@@ -1,4 +1,5 @@
 "use client";
+import { useSession } from "next-auth/react";
 
 import SignOutButton from "@/components/signoutButton";
 import {
@@ -14,6 +15,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { redirect } from "next/navigation";
 
 export default function DashboardLayout({
   children,
@@ -22,6 +24,13 @@ export default function DashboardLayout({
 }) {
   const [opened, { toggle }] = useDisclosure();
   const [activeNav, setActiveNav] = useState("");
+  const { status } = useSession();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      redirect("/auth/login");
+    }
+  }, [status]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
