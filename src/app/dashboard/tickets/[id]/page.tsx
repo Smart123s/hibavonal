@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { Ticket } from "@prisma/client";
 import { Card, Text, Badge } from "@mantine/core";
+import { loremIpsum } from "lorem-ipsum";
 
 export default async function ViewTicketPage({
   params,
@@ -38,6 +39,17 @@ export default async function ViewTicketPage({
       <Text size="sm" color="dimmed">
         {ticket.description}
       </Text>
+      {[...Array(4)].map((_, index) => (
+        <div key={index}>
+          <br />
+          <Text size="sm" color="dimmed">
+            {loremIpsum({
+              count: 40,
+              units: "words",
+            })}
+          </Text>
+        </div>
+      ))}
     </Card>
   );
 }
