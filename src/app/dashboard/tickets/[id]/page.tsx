@@ -9,7 +9,6 @@ export default async function ViewTicketPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  //TODO: check ijf authenticated user is allowed to view this ticket
   const session = await auth();
 
   const ticket: Ticket | null = await prisma.ticket.findUnique({
@@ -36,13 +35,13 @@ export default async function ViewTicketPage({
           {"STATUS"}
         </Badge>
       </div>
-      <Text size="sm" color="dimmed">
+      <Text size="sm" c="dimmed">
         {ticket.description}
       </Text>
       {[...Array(4)].map((_, index) => (
         <div key={index}>
           <br />
-          <Text size="sm" color="dimmed">
+          <Text size="sm" c="dimmed">
             {loremIpsum({
               count: 40,
               units: "words",
