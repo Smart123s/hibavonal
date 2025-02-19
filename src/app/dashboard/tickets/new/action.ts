@@ -3,7 +3,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 
 const schema = z.object({
@@ -12,7 +11,12 @@ const schema = z.object({
 });
 
 
-export async function createTicket(prevState: any, formData: FormData) {
+interface TicketState {
+    title: string;
+    description: string;
+}
+
+export async function createTicket(prevState: TicketState, formData: FormData) {
     const validatedFields = schema.safeParse({
         title: formData.get('title'),
         description: formData.get('description'),
@@ -42,7 +46,7 @@ export async function createTicket(prevState: any, formData: FormData) {
                 userId: session.user.id as string,
             },
         });
-    } catch (e: any) {
+    } catch (e: Error | unknown) {
         console.error("Database Error:", e);
         return {
             errors: { _form: ["Failed to create ticket."] },

@@ -27,7 +27,7 @@ export default function NewTicketPage() {
       });
       redirect("/dashboard/tickets");
     }
-  }, [result?.success]);
+  }, [result]);
 
   return (
     <div>
