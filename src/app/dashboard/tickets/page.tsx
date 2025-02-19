@@ -35,7 +35,9 @@ export default async function HomePage() {
         <Text fw={700} size="xl">
           Tickets
         </Text>
-        <RedirectButton text="New ticket" url="/dashboard/tickets/new/" />
+        <RedirectButton url="/dashboard/tickets/new/">
+          Create new ticket
+        </RedirectButton>
       </Container>
       <Grid>
         {tickets.map((ticket) => (
@@ -48,9 +50,6 @@ export default async function HomePage() {
               <Text size="sm" c="dimmed">
                 Placeholder description text
               </Text>
-              <Button color="blue" fullWidth mt="md" radius="md">
-                View ticket
-              </Button>
             </Card>
           </GridCol>
         ))}

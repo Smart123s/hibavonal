@@ -3,19 +3,25 @@
 import { Button } from "@mantine/core";
 import { redirect } from "next/navigation";
 
-interface RedirectButtonProps {
-  text: string;
+import { ButtonProps } from "@mantine/core";
+
+interface RedirectButtonProps extends ButtonProps {
   url: string;
 }
 
-export default function RedirectButton(props: RedirectButtonProps) {
+export default function RedirectButton({
+  url,
+  children,
+  ...props
+}: RedirectButtonProps & { children: React.ReactNode }) {
   return (
     <Button
       onClick={() => {
-        redirect(props.url);
+        redirect(url);
       }}
+      {...props}
     >
-      {props.text}
+      {children}
     </Button>
   );
 }

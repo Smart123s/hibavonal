@@ -43,7 +43,7 @@ export default function NewTicketPage() {
         <Text fw={700} size="xl">
           Create new ticket
         </Text>
-        <RedirectButton text="Back" url="/dashboard/tickets" />
+        <RedirectButton url="/dashboard/tickets">Back</RedirectButton>
       </Container>
 
       {errors && Object.values(errors).length > 0 && (
