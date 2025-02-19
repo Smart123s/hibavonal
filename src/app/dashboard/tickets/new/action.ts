@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
+import { Ticket } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -13,12 +14,7 @@ const schema = z.object({
 export interface TicketState {
     errors?: Record<string, string[]>;
     success?: boolean;
-    data?: {
-        id: string;
-        title: string;
-        description: string;
-        userId: string;
-    };
+    data?: Ticket;
 }
 
 export async function createTicket(prevState: TicketState | null, formData: FormData) {
