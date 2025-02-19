@@ -19,6 +19,7 @@ export default async function HomePage() {
         {session?.user?.name}
         {" is logged in"}
       </Text>
+      <Text>UserId: {session?.user?.id}</Text>
     </div>
   );
 }
