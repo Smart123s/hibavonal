@@ -6,7 +6,6 @@ import {
   Card,
   Group,
   Text,
-  Button,
   Grid,
   GridCol,
   Container,
@@ -50,6 +49,15 @@ export default async function HomePage() {
               <Text size="sm" c="dimmed">
                 Placeholder description text
               </Text>
+              <RedirectButton
+                color="blue"
+                fullWidth
+                mt="md"
+                radius="md"
+                url={"/dashboard/tickets/" + ticket.id}
+              >
+                View ticket
+              </RedirectButton>
             </Card>
           </GridCol>
         ))}
