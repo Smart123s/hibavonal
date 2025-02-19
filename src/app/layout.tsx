@@ -8,6 +8,8 @@ import {
 
 import { Notifications } from "@mantine/notifications";
 
+import "@mantine/notifications/styles.css";
+
 import { SessionProvider } from "next-auth/react";
 
 export const metadata = {
