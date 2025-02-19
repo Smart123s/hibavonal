@@ -10,13 +10,18 @@ const schema = z.object({
     description: z.string().min(1, { message: "Description is required" }),
 });
 
-
-interface TicketState {
-    title: string;
-    description: string;
+export interface TicketState {
+    errors?: Record<string, string[]>;
+    success?: boolean;
+    data?: {
+        id: string;
+        title: string;
+        description: string;
+        userId: string;
+    };
 }
 
-export async function createTicket(prevState: TicketState, formData: FormData) {
+export async function createTicket(prevState: TicketState | null, formData: FormData) {
     const validatedFields = schema.safeParse({
         title: formData.get('title'),
         description: formData.get('description'),

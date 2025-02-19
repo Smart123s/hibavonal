@@ -10,19 +10,22 @@ import {
   Alert,
 } from "@mantine/core";
 import { useActionState, useEffect } from "react";
-import { createTicket } from "./action";
+import { createTicket, TicketState } from "./action";
 import { showNotification } from "@mantine/notifications";
 import { redirect } from "next/navigation";
 
 export default function NewTicketPage() {
-  const [result, action] = useActionState(createTicket, { errors: {} });
+  const [result, action] = useActionState<TicketState | null, FormData>(
+    createTicket,
+    null
+  );
   const errors = result?.errors;
 
   useEffect(() => {
     if (result?.success) {
       showNotification({
         title: "Ticket Created",
-        message: `Ticket ${result.data.title} created successfully`,
+        message: `Ticket ${result.data?.title} created successfully`,
         color: "teal",
       });
       redirect("/dashboard/tickets");
