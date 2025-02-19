@@ -12,7 +12,7 @@
 
   model User {
     id            String          @id @default(cuid())
-    name     String?
+    name          String?
     email         String?         @unique
     emailVerified DateTime?
     password      String?
@@ -21,6 +21,8 @@
     sessions      Session[]
     // Optional for WebAuthn support
     Authenticator Authenticator[]
+    tickets       Ticket[] @relation("TicketUser")
+    ticketAssignee Ticket[] @relation("TicketAssignee")
   
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -81,4 +83,17 @@
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   
     @@id([userId, credentialID])
+  }
+
+  model Ticket {
+    id           String   @id @default(cuid())
+    title        String
+    description  String
+    userId       String
+    assigneeId   String?
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    user User @relation("TicketUser", fields: [userId], references: [id], onDelete: Cascade)
+    assignee User? @relation("TicketAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
   }
