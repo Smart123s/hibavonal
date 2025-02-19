@@ -42,4 +42,19 @@ export const {
             },
         }),
     ],
+    callbacks: {
+        session: ({ session, token }) => ({
+            ...session,
+            user: {
+                ...session.user,
+                id: token.id as string,
+            },
+        }),
+        jwt({ token, user }) {
+            if (user) {
+                return { ...token, id: user.id };
+            }
+            return token;
+        },
+    },
 });
