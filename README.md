@@ -8,10 +8,14 @@
 
 3. `pnpm install`
 
-4. Generate database models
-   `pnpm exec prisma generate`
+4. Copy `.env.example` as `.env`
 
-5. Start with `pnpm run dev`
+5. Generate database models
+   `pnpm exec prisma migrate dev`
+
+6. Disable extensions that modify the page (ex. DarkReader)
+
+7. Start with `pnpm run dev`
 
 ## DB migration
 
