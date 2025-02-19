@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function DashboardClientLayout({
@@ -23,11 +24,12 @@ export default function DashboardClientLayout({
   const [opened, { toggle }] = useDisclosure();
   const [activeNav, setActiveNav] = useState("");
 
+  const pathname = usePathname();
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setActiveNav(window.location.pathname.split("/")[2]);
-    }
-  }, []);
+    console.log(pathname);
+    setActiveNav(pathname.split("/")[2] || "home");
+  }, [pathname]);
 
   const linksData = ["Home", "Tickets"];
 
