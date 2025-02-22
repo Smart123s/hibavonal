@@ -15,12 +15,12 @@ import {
 import { showNotification } from "@mantine/notifications";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import React, { useActionState, useEffect } from "react";
+import React, { startTransition, useActionState, useEffect } from "react";
 import { authenticate, AuthState } from "./actions";
 import { redirect } from "next/navigation";
 
 export default function LoginPage() {
-  const [state, formAction] = useActionState<AuthState | null, FormData>(
+  const [state, action] = useActionState<AuthState | null, FormData>(
     authenticate,
     null
   );
@@ -46,6 +46,14 @@ export default function LoginPage() {
     }
   }, [status]);
 
+  // workaround to keep form data after submitting it
+  // useful when form has errors and user needs to fix them
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    startTransition(() => action(formData));
+  }
+
   return (
     <Container size={420} my={40}>
       <Title ta="center">HibaVonal</Title>
@@ -59,7 +67,7 @@ export default function LoginPage() {
       </Text>
 
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        <form action={formAction}>
+        <form onSubmit={handleSubmit}>
           <TextInput
             name="email"
             label="Email"
