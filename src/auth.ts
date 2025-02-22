@@ -1,9 +1,21 @@
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/prisma"
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { comparePassword } from "./utils/bcrypt";
 
+declare module "next-auth" {
+    interface Session {
+        user: {
+            role?: string
+            id: string
+        } & DefaultSession["user"]
+    }
+
+    interface User {
+        role?: string
+    }
+}
 
 export const {
     handlers: { GET, POST },
@@ -48,11 +60,16 @@ export const {
             user: {
                 ...session.user,
                 id: token.id as string,
+                role: token.role as string,
             },
         }),
         jwt({ token, user }) {
             if (user) {
-                return { ...token, id: user.id };
+                return {
+                    ...token,
+                    id: user.id,
+                    role: user.role,
+                };
             }
             return token;
         },

@@ -16,6 +16,7 @@
     email         String?         @unique
     emailVerified DateTime?
     password      String?
+    role          String          @default("student")
     image         String?
     accounts      Account[]
     sessions      Session[]

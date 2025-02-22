@@ -20,6 +20,7 @@ export default async function HomePage() {
         {" is logged in"}
       </Text>
       <Text>UserId: {session?.user?.id}</Text>
+      <Text>Role: {session?.user?.role}</Text>
     </div>
   );
 }
