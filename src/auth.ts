@@ -29,13 +29,13 @@ export const {
                 });
 
                 if (!user || !user.password) {
-                    throw new CredentialsSignin("Invalid email or password.");
+                    return null;
                 }
 
                 const passwordsMatch = await comparePassword(password, user.password);
 
                 if (!passwordsMatch) {
-                    throw new Error("Invalid email or password.");
+                    return null;
                 }
 
                 return user;

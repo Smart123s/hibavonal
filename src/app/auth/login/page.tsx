@@ -31,10 +31,10 @@ export default function LoginPage() {
       update().then(() => {
         redirect("/");
       });
-    } else if (state?.error) {
+    } else if (state?.errors && Object.keys(state.errors).length > 0) {
       showNotification({
         title: "Login Error",
-        message: `Login failed: ${state?.error}`,
+        message: `Login failed: ${state?.errors?.credentials?.join(", ")}`,
         color: "red",
       });
     }
@@ -65,6 +65,7 @@ export default function LoginPage() {
             label="Email"
             placeholder="you@mantine.dev"
             required
+            error={state?.errors?.email}
           />
           <PasswordInput
             name="password"
@@ -72,13 +73,8 @@ export default function LoginPage() {
             placeholder="Your password"
             required
             mt="md"
+            error={state?.errors?.credentials}
           />
-          <Group justify="space-between" mt="lg">
-            <Checkbox label="Remember me" />
-            <Anchor component="button" size="sm">
-              Forgot password?
-            </Anchor>
-          </Group>
           <Button type="submit" fullWidth mt="xl">
             Sign in
           </Button>

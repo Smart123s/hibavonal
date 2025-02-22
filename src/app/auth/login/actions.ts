@@ -2,20 +2,38 @@
 
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
+import { z } from "zod";
 
 export type AuthState = {
-    error?: string;
+    errors?: Record<string, string[]>;
     success?: boolean;
 };
+
+const schema = z.object({
+    email: z.string().email({ message: "Invalid email" }),
+    password: z.string().min(1, { message: "Password is required" }),
+});
 
 export async function authenticate(
     prevState: AuthState | null,
     formData: FormData
 ): Promise<AuthState> {
     try {
+        const validatedFields = schema.safeParse({
+            email: formData.get('email'),
+            password: formData.get('password'),
+        });
+
+        if (!validatedFields.success) {
+            return {
+                errors: validatedFields.error.flatten().fieldErrors,
+            };
+        }
+
+        const { email, password } = validatedFields.data;
         await signIn("credentials", {
-            email: formData.get("email") as string,
-            password: formData.get("password") as string,
+            email,
+            password,
             redirect: false,
         });
 
@@ -24,11 +42,11 @@ export async function authenticate(
         if (error instanceof AuthError) {
             switch (error.type) {
                 case "CredentialsSignin":
-                    return { error: "Invalid credentials" };
+                    return { errors: { credentials: ["Invalid credentials"] } };
                 default:
-                    return { error: "An unexpected error occurred" };
+                    return { errors: { unexpected: ["An unexpected error occurred"] } };
             }
         }
-        return { error: "Failed to authenticate" };
+        return { errors: { authentication: ["Failed to authenticate"] } };
     }
 }
