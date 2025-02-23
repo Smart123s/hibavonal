@@ -10,13 +10,13 @@ import {
   Alert,
 } from "@mantine/core";
 import { useActionState, useEffect } from "react";
-import { createTicket, TicketState } from "./action";
+import { createTicketAction, TicketState } from "./action";
 import { showNotification } from "@mantine/notifications";
 import { redirect } from "next/navigation";
 
 export default function NewTicketPage() {
   const [result, action] = useActionState<TicketState | null, FormData>(
-    createTicket,
+    createTicketAction,
     null
   );
   const errors = result?.errors;

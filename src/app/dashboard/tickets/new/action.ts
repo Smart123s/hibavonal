@@ -18,7 +18,7 @@ export interface TicketState {
     data?: Ticket;
 }
 
-export async function createTicket(prevState: TicketState | null, formData: FormData) {
+export async function createTicketAction(prevState: TicketState | null, formData: FormData) {
     const validatedFields = schema.safeParse({
         title: formData.get('title'),
         description: formData.get('description'),
