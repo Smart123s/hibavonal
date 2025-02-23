@@ -1,6 +1,7 @@
 import RedirectButton from "@/app/components/redirectButton";
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
+import { hasPermission } from "@/utils/permissions";
 import {
   Badge,
   Card,
@@ -10,7 +11,7 @@ import {
   GridCol,
   Container,
 } from "@mantine/core";
-import { Ticket } from "@prisma/client";
+import { Role, Ticket } from "@prisma/client";
 
 export default async function HomePage() {
   const session = await auth();
@@ -34,9 +35,11 @@ export default async function HomePage() {
         <Text fw={700} size="xl">
           Tickets
         </Text>
-        <RedirectButton url="/dashboard/tickets/new/">
-          Create new ticket
-        </RedirectButton>
+        {hasPermission(session?.user.role as Role, "ticket", "create") && (
+          <RedirectButton url="/dashboard/tickets/new/">
+            Create new ticket
+          </RedirectButton>
+        )}
       </Container>
       <Grid>
         {tickets.map((ticket) => (

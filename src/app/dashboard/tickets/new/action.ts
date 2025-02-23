@@ -2,7 +2,8 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
-import { Ticket } from "@prisma/client";
+import { hasPermission } from "@/utils/permissions";
+import { Role, Ticket } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -35,6 +36,12 @@ export async function createTicket(prevState: TicketState | null, formData: Form
     if (!session || !session.user) {
         return {
             errors: { _form: ["Unauthorized"] },
+        };
+    }
+
+    if (!hasPermission(session.user.role as Role, 'ticket', 'create')) {
+        return {
+            errors: { _form: ["Forbidden"] },
         };
     }
 
