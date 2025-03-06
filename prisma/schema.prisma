@@ -29,9 +29,9 @@ enum RequestState {
 }
 
 model User {
-  id            String            @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String?           @unique
+  email         String?   @unique
   emailVerified DateTime?
   password      String?
 
@@ -44,10 +44,10 @@ model User {
   tickets         Ticket[]        @relation("TicketUser")
   assignedTickets Ticket[]        @relation("AssignedTickets")
 
-  roomId          Int?            
-  room            RoomUser?       @relation(fields: [roomId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  roomId    Int?
+  room      RoomUser? @relation(fields: [roomId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Account {
@@ -64,8 +64,8 @@ model Account {
   id_token          String?
   session_state     String?
 
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -108,73 +108,75 @@ model Authenticator {
 }
 
 model Ticket {
-  id             String            @id @default(cuid())
+  id             String   @id @default(cuid())
   title          String
   description    String
   userId         String
   assignedUserId String?
-  typeId         String?           @unique
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  typeId         String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  comments     TicketComment[]
-  type         TicketType?         @relation(fields: [typeId], references: [id])
+  comments TicketComment[]
+  type     TicketType?     @relation(fields: [typeId], references: [id])
 
-  user         User   @relation("TicketUser", fields: [userId], references: [id], onDelete: Cascade)
-  assignedUser User?  @relation("AssignedTickets", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  user         User  @relation("TicketUser", fields: [userId], references: [id], onDelete: Cascade)
+  assignedUser User? @relation("AssignedTickets", fields: [assignedUserId], references: [id], onDelete: SetNull)
 }
 
 model TicketType {
-  id        String    @id @default(cuid())
-  name      String
+  id   String @id @default(cuid())
+  name String
 
-  ticket    Ticket?
+  ticket Ticket?
 }
 
 model TicketComment {
-  id        String  @id @default(cuid())
-  ticketId  String
-  content   String
+  id       String @id @default(cuid())
+  ticketId String
+  content  String
 
-  ticket    Ticket  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
   @@map("ticket_comments")
 }
 
 model Room {
-  id         String             @id @default(cuid())
-  roomUserId Int                @unique
+  id         String @id @default(cuid())
+  roomUserId Int    @unique
 
-  level      Int
-  name       String             
+  level Int
+  name  String
 
-  roomType   RoomType           @default(Public)
-  roomUser   RoomUser           @relation(fields: [roomUserId], references: [id])
+  roomType   RoomType        @default(Public)
+  roomUser   RoomUser        @relation(fields: [roomUserId], references: [id])
   equipments RoomEquipment[]
 }
 
 model RoomEquipment {
   name       String
   locationId String
-  requestId  String            @unique
+  requestId  String @unique
 
-  request    EquipmentRequest? @relation(fields: [requestId], references: [id])
-  location   Room              @relation(fields: [locationId], references: [id])
+  request  EquipmentRequest? @relation(fields: [requestId], references: [id])
+  location Room              @relation(fields: [locationId], references: [id])
+
   @@id([name, locationId])
 }
 
 model RoomUser {
-  id      Int     @id @default(autoincrement())
-  users   User[]
-  room    Room?
+  id    Int    @id @default(autoincrement())
+  users User[]
+  room  Room?
 }
 
 model EquipmentRequest {
-  id          String            @id @default(cuid())
+  id          String @id @default(cuid())
   ticketId    String
   equipmentId String
 
-  alias       String
-  state       RequestState      @default(Requested)
+  alias String
+  state RequestState @default(Requested)
 
-  equipment   RoomEquipment?
+  equipment RoomEquipment?
 }
