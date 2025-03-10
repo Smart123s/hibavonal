@@ -20,3 +20,11 @@
 ## DB migration
 
 `pnpm exec prisma migrate dev --name <name>`
+
+## DB seeding
+`pnpm prisma db seed <up|down> <all|name-of-seeder: string>`
+
+To add your own seeder:
+- Make a seeder file in the prisma/seeds folder
+- Export a seeder type object from it
+- Register it in prisma/seeds/main.ts, into the SEEDERS map
