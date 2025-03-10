@@ -16,6 +16,7 @@ import { useSession } from "next-auth/react";
 import React, { startTransition, useActionState, useEffect } from "react";
 import { authenticate, AuthState } from "./actions";
 import { redirect } from "next/navigation";
+import {DevLoginButton} from "@/components/DevLoginButton";
 
 export default function LoginPage() {
   const [state, action] = useActionState<AuthState | null, FormData>(
@@ -63,6 +64,14 @@ export default function LoginPage() {
           </Anchor>
         </Link>
       </Text>
+
+      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+        <Text ta="center">Developer Tab</Text>
+        <DevLoginButton handleSubmit={handleSubmit} role="student" />
+        <DevLoginButton handleSubmit={handleSubmit} role="maintainer" />
+        <DevLoginButton handleSubmit={handleSubmit} role="leadMaintainer" />
+        <DevLoginButton handleSubmit={handleSubmit} role="admin" />
+      </Paper>
 
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <form onSubmit={handleSubmit}>
