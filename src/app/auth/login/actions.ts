@@ -3,6 +3,8 @@
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import { z } from "zod";
+import {prisma} from "@/prisma";
+import {DEV_EMAIL_DOMAIN} from "../../../../prisma/seeds/add-dev-users";
 
 export type AuthState = {
     errors?: Record<string, string[]>;
@@ -49,4 +51,18 @@ export async function authenticate(
         }
         return { errors: { authentication: ["Failed to authenticate"] } };
     }
+}
+
+export type DevAccountSeededState = {
+    loaded: boolean;
+    seeded: boolean;
+}
+
+export async function haveDevUsersBeenSeeded(): Promise<DevAccountSeededState> {
+    const likeTemplate = `%@${DEV_EMAIL_DOMAIN}`;
+    const seededUsersCount =  (await prisma.$queryRaw<[{cnt: number}]>`SELECT COUNT(id) AS cnt FROM User WHERE email LIKE ${likeTemplate}`)[0].cnt;
+    return {
+        loaded: true,
+        seeded: seededUsersCount > 0,
+    };
 }

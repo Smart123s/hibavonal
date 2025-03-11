@@ -3,6 +3,7 @@ import { prisma } from "@/prisma"
 import NextAuth, { DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { comparePassword } from "./utils/bcrypt";
+import {DEV_EMAIL_DOMAIN} from "../prisma/seeds/add-dev-users";
 
 declare module "next-auth" {
     interface Session {
@@ -42,7 +43,7 @@ export const {
 
                 if (!user) return null;
 
-                if(email.endsWith("@example.com")) {
+                if(email.endsWith("@" + DEV_EMAIL_DOMAIN)) {
                     return process.env.NODE_ENV === "development" ? user : null;
                 }
 

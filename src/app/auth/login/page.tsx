@@ -13,8 +13,8 @@ import {
 import { showNotification } from "@mantine/notifications";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import React, { startTransition, useActionState, useEffect } from "react";
-import { authenticate, AuthState } from "./actions";
+import React, {startTransition, useActionState, useEffect, useState} from "react";
+import {authenticate, AuthState, DevAccountSeededState, haveDevUsersBeenSeeded} from "./actions";
 import { redirect } from "next/navigation";
 import {DevLoginButton} from "@/components/DevLoginButton";
 
@@ -53,6 +53,14 @@ export default function LoginPage() {
     startTransition(() => action(formData));
   }
 
+  const [devAccountsSeeded, setDevAccountsSeeded] = useState<DevAccountSeededState>({
+    loaded: false,
+    seeded: false
+  });
+  useEffect(() => {
+    haveDevUsersBeenSeeded().then(have => setDevAccountsSeeded(have));
+  }, [])
+
   return (
     <Container size={420} my={40}>
       <Title ta="center">HibaVonal</Title>
@@ -65,13 +73,31 @@ export default function LoginPage() {
         </Link>
       </Text>
 
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        <Text ta="center">Developer Tab</Text>
-        <DevLoginButton handleSubmit={handleSubmit} role="student" />
-        <DevLoginButton handleSubmit={handleSubmit} role="maintainer" />
-        <DevLoginButton handleSubmit={handleSubmit} role="leadMaintainer" />
-        <DevLoginButton handleSubmit={handleSubmit} role="admin" />
-      </Paper>
+      {process.env.NODE_ENV === "development" ? (
+        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+          {devAccountsSeeded.loaded ? (
+            <div style={{display: "contents"}}>
+              <Text ta="center">Developer Tab</Text>
+              {devAccountsSeeded.seeded ? (
+                  <div style={{display: "contents"}}>
+                    <DevLoginButton handleSubmit={handleSubmit} role="student" />
+                    <DevLoginButton handleSubmit={handleSubmit} role="maintainer" />
+                    <DevLoginButton handleSubmit={handleSubmit} role="leadMaintainer" />
+                    <DevLoginButton handleSubmit={handleSubmit} role="admin" />
+                  </div>
+              ) : (
+                  <Text size="sm" ta="center">
+                    Developer accounts have not yet been seeded.
+                    Seed them with <br/>
+                    <code>pnpm prisma db seed up add-dev-users</code>
+                  </Text>
+              )}
+            </div>
+          ) : (
+              <Text ta="center">Developer Tab loading...</Text>
+          )}
+        </Paper>
+      ) : null}
 
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <form onSubmit={handleSubmit}>
