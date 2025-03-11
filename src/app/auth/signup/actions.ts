@@ -3,6 +3,7 @@
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { prisma } from "@/prisma";
+import {isDevEmail} from "../../../../prisma/seeds/add-dev-users";
 
 export async function signUp(formData: FormData) {
     const firstName = formData.get("firstName") as string;
@@ -12,6 +13,10 @@ export async function signUp(formData: FormData) {
 
     if (!firstName || !lastName || !email || !password) {
         throw new Error("Missing required fields");
+    }
+
+    if(isDevEmail(email)) {
+        throw new Error("This email domain is not allowed");
     }
 
     try {
