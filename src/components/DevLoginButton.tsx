@@ -2,7 +2,7 @@ import {Button} from "@mantine/core";
 import React, {FormEventHandler} from "react";
 import {Role} from "@prisma/client";
 import {roleToHumanReadable} from "@/utils/roles";
-import {DEV_EMAIL_DOMAIN, getDevEmailFromRole} from "../../prisma/seeds/add-dev-users";
+import {getDevEmailFromRole} from "../../prisma/seeds/add-dev-users";
 
 export function DevLoginButton(
     { handleSubmit, role }: {
