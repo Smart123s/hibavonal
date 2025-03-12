@@ -1,4 +1,5 @@
 import addDevUsers from "./add-dev-users"
+import addBuiltInTicketTypes from "./add-built-in-ticket-types";
 
 export type Seeder = {
     up: () => Promise<void>,
@@ -8,7 +9,8 @@ export type Seeder = {
 export type SeedDirection = "up" | "down";
 
 const SEEDERS: { [s: string]: Seeder } = {
-    'add-dev-users': addDevUsers
+    'add-dev-users': addDevUsers,
+    'add-built-in-ticket-types': addBuiltInTicketTypes,
 }
 
 function usageInfo() {

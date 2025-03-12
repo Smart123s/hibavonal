@@ -6,6 +6,7 @@ import { hasPermission } from "@/utils/permissions";
 import { Role, Ticket } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import {TicketType} from "../../../../../prisma/seeds/add-built-in-ticket-types";
 
 const schema = z.object({
     title: z.string().min(1, { message: "Title is required" }),
@@ -51,6 +52,7 @@ export async function createTicketAction(prevState: TicketState | null, formData
             data: {
                 title,
                 description,
+                typeId: TicketType.SentIn,
                 userId: session.user.id as string,
             },
         });

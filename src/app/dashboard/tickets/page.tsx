@@ -1,7 +1,7 @@
 import RedirectButton from "@/app/components/redirectButton";
-import { auth } from "@/auth";
-import { prisma } from "@/prisma";
-import { hasPermission } from "@/utils/permissions";
+import {auth} from "@/auth";
+import {prisma} from "@/prisma";
+import {hasPermission} from "@/utils/permissions";
 import {
   Badge,
   Card,
@@ -11,14 +11,15 @@ import {
   GridCol,
   Container,
 } from "@mantine/core";
-import { Role, Ticket } from "@prisma/client";
+import {Role} from "@prisma/client";
 
 export default async function HomePage() {
   const session = await auth();
-  const tickets: Ticket[] = await prisma.ticket.findMany({
+  const tickets = await prisma.ticket.findMany({
     where: {
       userId: session?.user?.id,
     },
+    include: {type: true}
   });
 
   return (
@@ -43,11 +44,18 @@ export default async function HomePage() {
       </Container>
       <Grid>
         {tickets.map((ticket) => (
-          <GridCol span={{ base: 12, md: 6, lg: 3 }} key={ticket.id}>
+          <GridCol span={{base: 12, md: 6, lg: 3}} key={ticket.id}>
             <Card shadow="sm" padding="lg" radius="md" withBorder>
               <Group justify="space-between" mb="xs">
                 <Text fw={500}>{ticket.title}</Text>
-                <Badge color="pink">Status</Badge>
+                {ticket.type !== null ? (
+                  <Badge
+                    color={ticket.type.color}
+                    autoContrast
+                  >
+                    {ticket.type.name}
+                  </Badge>
+                ) : null}
               </Group>
               <Text size="sm" c="dimmed">
                 Placeholder description text

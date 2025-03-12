@@ -42,12 +42,14 @@ model User {
   // Optional for WebAuthn support
   Authenticator   Authenticator[]
   tickets         Ticket[]        @relation("TicketUser")
+  TicketComment TicketComment[]
   assignedTickets Ticket[]        @relation("AssignedTickets")
 
   roomId    Int?
   room      RoomUser? @relation(fields: [roomId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
 }
 
 model Account {
@@ -125,18 +127,22 @@ model Ticket {
 }
 
 model TicketType {
-  id   String @id @default(cuid())
-  name String
+  id      String @id @default(cuid())
+  name    String
+  builtIn Boolean @default(false)
+  color   String @default("#17C5C5")
 
-  ticket Ticket?
+  tickets Ticket[]
 }
 
 model TicketComment {
   id       String @id @default(cuid())
   ticketId String
+  userId   String
   content  String
 
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: NoAction)
 
   @@map("ticket_comments")
 }
