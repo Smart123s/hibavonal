@@ -22,7 +22,7 @@ if (SEEDERS['all'] !== undefined) {
     process.exit(1);
 }
 
-const args = process.argv.filter(s => !s.includes("/"))
+const args = process.argv.filter(s => !s.includes("/") && !s.includes("\\"));
 if(args.length !== 2) {
     console.error('Not the right amount of arguments.')
     usageInfo();
