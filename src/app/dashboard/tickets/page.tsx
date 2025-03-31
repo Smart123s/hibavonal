@@ -19,7 +19,7 @@ export default async function HomePage() {
     where: {
       userId: session?.user?.id,
     },
-    include: {type: true}
+    include: {type: true, room: true}
   });
 
   return (
@@ -48,14 +48,23 @@ export default async function HomePage() {
             <Card shadow="sm" padding="lg" radius="md" withBorder>
               <Group justify="space-between" mb="xs">
                 <Text fw={500}>{ticket.title}</Text>
-                {ticket.type !== null ? (
-                  <Badge
-                    color={ticket.type.color}
-                    autoContrast
-                  >
-                    {ticket.type.name}
-                  </Badge>
-                ) : null}
+                <Group>
+                  {ticket.room !== null ? (
+                    <Badge
+                      color="gray"
+                    >
+                      {ticket.room?.name}
+                    </Badge>
+                  ) : null}
+                  {ticket.type !== null ? (
+                    <Badge
+                      color={ticket.type.color}
+                      autoContrast
+                    >
+                      {ticket.type.name}
+                    </Badge>
+                  ) : null}
+                </Group>
               </Group>
               <Text size="sm" c="dimmed">
                 Placeholder description text

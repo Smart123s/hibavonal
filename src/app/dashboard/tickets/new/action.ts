@@ -10,6 +10,7 @@ import {TicketType} from "../../../../../prisma/seeds/add-built-in-ticket-types"
 
 const schema = z.object({
     title: z.string().min(1, { message: "Title is required" }),
+    room: z.string().min(1, { message: "Room is required" }),
     description: z.string().min(1, { message: "Description is required" }),
 });
 
@@ -22,6 +23,7 @@ export interface TicketState {
 export async function createTicketAction(prevState: TicketState | null, formData: FormData) {
     const validatedFields = schema.safeParse({
         title: formData.get('title'),
+        room: formData.get('room'),
         description: formData.get('description'),
     });
 
@@ -31,7 +33,7 @@ export async function createTicketAction(prevState: TicketState | null, formData
         };
     }
 
-    const { title, description } = validatedFields.data;
+    const { title, room, description } = validatedFields.data;
 
     const session = await auth();
     if (!session || !session.user) {
@@ -46,6 +48,29 @@ export async function createTicketAction(prevState: TicketState | null, formData
         };
     }
 
+    if(!(await prisma.room.findFirst({
+        where: {
+            id: room,
+            users: {
+                some: {
+                    id: session.user.id
+                }
+            }
+        }
+    }))) {
+        return {
+            errors: { _form: ["Room does not belong to user"] },
+        }
+    }
+
+    console.log({
+        title,
+        description,
+        typeId: TicketType.SentIn,
+        userId: session.user.id as string,
+        roomId: room
+    })
+
     let ticket;
     try {
         ticket = await prisma.ticket.create({
@@ -54,10 +79,11 @@ export async function createTicketAction(prevState: TicketState | null, formData
                 description,
                 typeId: TicketType.SentIn,
                 userId: session.user.id as string,
+                roomId: room
             },
         });
     } catch (e: Error | unknown) {
-        console.error("Database Error:", e);
+        console.error("Database Error:", e ?? 'Error is null');
         return {
             errors: { _form: ["Failed to create ticket."] },
         };
@@ -69,4 +95,33 @@ export async function createTicketAction(prevState: TicketState | null, formData
         success: true,
         data: ticket,
     };
+}
+
+export type RoomOption = {
+    label: string;
+    value: string;
+}
+
+export async function loadRooms(): Promise<RoomOption[]> {
+    const session = await auth();
+    if (!session || !session.user) {
+        throw new Error("Unauthorized");
+    }
+
+    const result = await prisma.user.findFirst({
+        where: {
+            id: session.user.id,
+        },
+        select: {
+            rooms: true
+        }
+    })
+    if(result === null) throw new Error("Missing user");
+
+    return result.rooms.map(room => {
+        return {
+            label: `${room.name} (Floor ${room.level})`,
+            value: room.id
+        }
+    })
 }

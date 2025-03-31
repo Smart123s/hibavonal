@@ -7,10 +7,10 @@ import {
   Text,
   Textarea,
   TextInput,
-  Alert,
+  Alert, NativeSelect,
 } from "@mantine/core";
-import { useActionState, useEffect } from "react";
-import { createTicketAction, TicketState } from "./action";
+import {useActionState, useEffect, useState} from "react";
+import {createTicketAction, loadRooms, RoomOption, TicketState} from "./action";
 import { showNotification } from "@mantine/notifications";
 import { redirect } from "next/navigation";
 
@@ -31,6 +31,12 @@ export default function NewTicketPage() {
       redirect("/dashboard/tickets");
     }
   }, [result]);
+
+  const [roomOptions, setRoomOptions] = useState<RoomOption[] | null>(null);
+
+  useEffect(() => {
+    loadRooms().then(options => setRoomOptions(options))
+  }, []);
 
   return (
     <div>
@@ -65,6 +71,7 @@ export default function NewTicketPage() {
           required
           error={errors && "title" in errors ? errors.title : undefined}
         />
+        <NativeSelect label="Room" name="room" withAsterisk data={roomOptions !== null ? roomOptions : ['Loading...']} disabled={roomOptions === null} />
         <Textarea
           label="Description"
           placeholder="Enter ticket description"
@@ -76,8 +83,8 @@ export default function NewTicketPage() {
             errors && "description" in errors ? errors.description : undefined
           }
         />
-        <Button type="submit" mt="md">
-          Submit
+        <Button type="submit" mt="md" disabled={roomOptions === null}>
+          {roomOptions === null ? "Loading..." : "Submit"}
         </Button>{" "}
       </form>
     </div>

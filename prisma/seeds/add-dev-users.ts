@@ -13,15 +13,36 @@ export function getDevEmailFromRole(role: Role) {
 
 const addDevUsers: Seeder = {
     async up() {
+        await prisma.user.create({
+            data: {
+                name: 'Test Student',
+                email: getDevEmailFromRole('student'),
+                emailVerified: new Date(),
+                role: 'student',
+                createdAt: new Date(),
+                rooms: {
+                    create: [
+                        {
+                            level: 1,
+                            name: "Test Room",
+                            roomType: "Private"
+                        },
+                        {
+                            level: 2,
+                            name: "Other Room",
+                            roomType: "Private"
+                        },
+                        {
+                            level: 3,
+                            name: "Lounge",
+                            roomType: "Public"
+                        }
+                    ]
+                }
+            },
+        })
         await prisma.user.createMany({
             data: [
-                {
-                    name: 'Test Student',
-                    email: getDevEmailFromRole('student'),
-                    emailVerified: new Date(),
-                    role: 'student',
-                    createdAt: new Date(),
-                },
                 {
                     name: 'Test Maintainer',
                     email: getDevEmailFromRole('maintainer'),

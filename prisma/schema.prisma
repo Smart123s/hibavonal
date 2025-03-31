@@ -45,8 +45,7 @@ model User {
   TicketComment TicketComment[]
   assignedTickets Ticket[]        @relation("AssignedTickets")
 
-  roomId    Int?
-  room      RoomUser? @relation(fields: [roomId], references: [id])
+  rooms     Room[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -115,7 +114,8 @@ model Ticket {
   description    String
   userId         String
   assignedUserId String?
-  typeId         String?  @unique
+  typeId         String?
+  roomId         String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -124,6 +124,7 @@ model Ticket {
 
   user         User  @relation("TicketUser", fields: [userId], references: [id], onDelete: Cascade)
   assignedUser User? @relation("AssignedTickets", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  room         Room?  @relation("TicketRoom", fields: [roomId], references: [id], onDelete: SetNull)
 }
 
 model TicketType {
@@ -149,14 +150,15 @@ model TicketComment {
 
 model Room {
   id         String @id @default(cuid())
-  roomUserId Int    @unique
 
   level Int
   name  String
 
   roomType   RoomType        @default(Public)
-  roomUser   RoomUser        @relation(fields: [roomUserId], references: [id])
+  users      User[]
   equipments RoomEquipment[]
+
+  tickets Ticket[] @relation("TicketRoom")
 }
 
 model RoomEquipment {
@@ -168,12 +170,6 @@ model RoomEquipment {
   location Room              @relation(fields: [locationId], references: [id])
 
   @@id([name, locationId])
-}
-
-model RoomUser {
-  id    Int    @id @default(autoincrement())
-  users User[]
-  room  Room?
 }
 
 model EquipmentRequest {

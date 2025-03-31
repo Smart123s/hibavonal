@@ -1,6 +1,6 @@
 import {auth} from "@/auth";
 import {prisma} from "@/prisma";
-import {Card, Text, Badge} from "@mantine/core";
+import {Card, Text, Badge, Group} from "@mantine/core";
 import {loremIpsum} from "lorem-ipsum";
 
 export default async function ViewTicketPage(
@@ -14,7 +14,7 @@ export default async function ViewTicketPage(
 
   const ticket = await prisma.ticket.findUnique({
     where: {id: (await params).id},
-    include: {type: true}
+    include: {type: true, room: true}
   });
 
   if (!ticket) {
@@ -33,11 +33,20 @@ export default async function ViewTicketPage(
         <Text size="lg" style={{marginRight: "1rem"}}>
           {ticket.title}
         </Text>
-        {ticket.type !== null ? (
-          <Badge color={ticket.type.color} autoContrast>
-            {ticket.type.name}
-          </Badge>
-        ) : null}
+        <Group>
+          {ticket.room !== null ? (
+            <Badge
+              color="gray"
+            >
+              {ticket.room?.name}
+            </Badge>
+          ) : null}
+          {ticket.type !== null ? (
+            <Badge color={ticket.type.color} autoContrast>
+              {ticket.type.name}
+            </Badge>
+          ) : null}
+        </Group>
       </div>
       <Text size="sm" c="dimmed">
         {ticket.description}
