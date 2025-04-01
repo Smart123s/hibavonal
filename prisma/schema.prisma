@@ -128,10 +128,11 @@ model Ticket {
 }
 
 model TicketType {
-  id      String @id @default(cuid())
-  name    String
-  builtIn Boolean @default(false)
-  color   String @default("#17C5C5")
+  id               String @id @default(cuid())
+  name             String
+  builtIn          Boolean @default(false)
+  color            String @default("#17C5C5")
+  allowsCommenting Boolean @default(true)
 
   tickets Ticket[]
 }

@@ -18,30 +18,35 @@ const addBuiltInTicketTypes: Seeder = {
                     builtIn: true,
                     name: "Beküldve",
                     color: "#175dc5",
+                    allowsCommenting: true
                 },
                 {
                     id: TicketType.InProgress,
                     builtIn: true,
                     name: "Folyamatban",
                     color: "#17bfc5",
+                    allowsCommenting: true
                 },
                 {
                     id: TicketType.Done,
                     builtIn: true,
                     name: "Kész",
                     color: "#34C517",
+                    allowsCommenting: true
                 },
                 {
                     id: TicketType.Feedback,
                     builtIn: true,
                     name: "Visszajelzés",
                     color: "#FC7910",
+                    allowsCommenting: true
                 },
                 {
                     id: TicketType.Rejected,
                     builtIn: true,
                     name: "Elutasítva",
                     color: "#EC0E0E",
+                    allowsCommenting: false
                 }
             ]
         })
