@@ -1,10 +1,11 @@
 "use client";
-import {ActionIcon, Badge, Card, Group, Loader, Text, Textarea} from "@mantine/core";
+import {ActionIcon, Badge, Card, Container, Group, Loader, Text, Textarea} from "@mantine/core";
 import {loremIpsum} from "lorem-ipsum";
 import {roleToHumanReadable} from "@/utils/roles";
 import React, {startTransition, useActionState, useEffect, useRef, useState} from "react";
 import {CommentSendState, loadTicketData, sendComment, TicketData} from "@/app/dashboard/tickets/[id]/action";
 import { IconSend } from "@tabler/icons-react"
+import RedirectButton from "@/app/components/redirectButton";
 
 export default function ViewTicketPage(
   {
@@ -53,6 +54,19 @@ export default function ViewTicketPage(
           </Group>
         ) : (
           <>
+            {data.ticket?.type?.allowsEditing ? (
+              <Container
+                fluid
+                style={{
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                  marginBottom: "16px",
+                }}
+              >
+                <RedirectButton url={`/dashboard/tickets/${p.id}/edit`}>Edit</RedirectButton>
+              </Container>
+            ) : null}
             <Card shadow="sm" padding="lg" radius="md" mb="md" withBorder>
               {data.ticket != null ? (
                 <>

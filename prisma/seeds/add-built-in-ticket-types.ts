@@ -18,6 +18,7 @@ const addBuiltInTicketTypes: Seeder = {
                     builtIn: true,
                     name: "Beküldve",
                     color: "#175dc5",
+                    allowsEditing: true,
                     allowsCommenting: true
                 },
                 {
@@ -25,6 +26,7 @@ const addBuiltInTicketTypes: Seeder = {
                     builtIn: true,
                     name: "Folyamatban",
                     color: "#17bfc5",
+                    allowsEditing: false,
                     allowsCommenting: true
                 },
                 {
@@ -32,6 +34,7 @@ const addBuiltInTicketTypes: Seeder = {
                     builtIn: true,
                     name: "Kész",
                     color: "#34C517",
+                    allowsEditing: false,
                     allowsCommenting: true
                 },
                 {
@@ -39,6 +42,7 @@ const addBuiltInTicketTypes: Seeder = {
                     builtIn: true,
                     name: "Visszajelzés",
                     color: "#FC7910",
+                    allowsEditing: false,
                     allowsCommenting: true
                 },
                 {
@@ -46,6 +50,7 @@ const addBuiltInTicketTypes: Seeder = {
                     builtIn: true,
                     name: "Elutasítva",
                     color: "#EC0E0E",
+                    allowsEditing: false,
                     allowsCommenting: false
                 }
             ]
