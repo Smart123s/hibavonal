@@ -96,9 +96,9 @@ export default function ViewTicketPage(
             </Card>
             <hr style={{ color: "var(--mantine-color-dark-4)" }}/>
             {data.ticket ? (
-              <div style={{ marginTop: "var(--mantine-spacing-md)" }} key={data.ticket.id}>
+              <div style={{ marginTop: "var(--mantine-spacing-md)" }}>
                 {data.ticket.comments.map((comment, i) => (
-                  <>
+                  <div style={{ display: "contents" }} key={comment.id}>
                     {(i === 0 || data.ticket.comments[i - 1].userId !== comment.userId) ? (
                       <Group mb="md" mr="auto">
                         <Text>
@@ -145,7 +145,7 @@ export default function ViewTicketPage(
                         {comment.content}
                       </Text>
                     </Card>
-                  </>
+                  </div>
                 ))}
                 {data.canSubmitComment ? (
                   <form onSubmit={handleSendComment} ref={commentForm}>
