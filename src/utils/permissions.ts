@@ -4,24 +4,35 @@ const permissions = {
             create: true,
             read: true,
         },
-        ticketComment: {}
+        ticketComment: {},
+        room: {
+            create: false,
+        },
     } as RolePermissions,
     maintainer: {
         ticket: {
             create: true,
             read: true,
         },
-        ticketComment: {}
+        ticketComment: {},
+        room: {
+            create: false,
+            delete: false,
+        },
     } as RolePermissions,
     leadMaintainer: {
         ticket: {
             create: true,
             read: true,
-            readAll: true
+            readAll: true,
         },
         ticketComment: {
-            create: true
-        }
+            create: true,
+        },
+        room: {
+            create: true,
+            delete: true,
+        },
     } as RolePermissions,
     admin: {
         ticket: {
@@ -30,20 +41,25 @@ const permissions = {
             readAll: true,
         },
         ticketComment: {
-            create: true
-        }
+            create: true,
+        },
+        room: {
+            create: true,
+            delete: true,
+        },
     } as RolePermissions,
-}
+};
 
 interface Permission {
-    create?: boolean
-    read?: boolean
-    readAll?: boolean
+    create?: boolean;
+    read?: boolean;
+    readAll?: boolean;
 }
 
 interface RolePermissions {
-    ticket: Permission,
-    ticketComment: Permission
+    ticket: Permission;
+    ticketComment: Permission;
+    room: Permission;
 }
 
 export function hasPermission(role: keyof typeof permissions, resource: keyof RolePermissions, permission: keyof Permission) {

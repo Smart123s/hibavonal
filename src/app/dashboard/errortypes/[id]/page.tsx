@@ -1,0 +1,103 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import {
+  Badge,
+  Button,
+  Card,
+  Group,
+  Loader,
+  Text,
+  TextInput,
+} from "@mantine/core";
+import { loadErrorTypeData, updateErrorData, ErrorTypeData } from "./action";
+
+export default function ViewErrorTypePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const p = React.use(params);
+  const [data, setData] = useState<ErrorTypeData>({ loaded: false });
+
+  const [name, setName] = useState("");
+  const [severity, setSeverity] = useState("");
+
+  useEffect(() => {
+    loadErrorTypeData(p.id).then((d) => {
+      setData(d);
+      if (d.loaded && d.errorType) {
+        setName(d.errorType.name);
+        setSeverity(d.errorType.severity.toString());
+      }
+    });
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      if (!data.loaded || !data.errorType) return;
+  
+      const response = await fetch(`/api/errortypes/${data.errorType.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          severity: parseInt(severity),
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update");
+      }
+  
+      alert("Error updated successfully!");
+    } catch (error) {
+      console.error("Error updating:", error);
+      alert("Failed to update.");
+    }
+  };
+  
+
+  if (!data.loaded) {
+    return (
+      <Group w="100%" h="50vh" justify="center" align="center">
+        <Loader color="blue" type="bars" />
+      </Group>
+    );
+  }
+
+  if (data.loaded && data.errorType == null) {
+    return (
+      <Card shadow="sm" padding="lg" radius="md" mb="md" withBorder>
+        <Text color="red">{data.error}</Text>
+      </Card>
+    );
+  }
+
+  return (
+    <div>
+      <Card shadow="sm" padding="lg" radius="md" mb="md" withBorder>
+        <TextInput
+          label="Name"
+          value={name}
+          onChange={(e) => setName(e.currentTarget.value)}
+          mb="sm"
+        />
+        <TextInput
+          label="Severity"
+          type="number"
+          value={severity}
+          onChange={(e) => setSeverity(e.currentTarget.value)}
+          mb="sm"
+        />
+        <Group justify="end" mt="md">
+          <Button onClick={handleSave} className="mt-4">
+            Save
+          </Button>
+        </Group>
+      </Card>
+    </div>
+  );
+}
