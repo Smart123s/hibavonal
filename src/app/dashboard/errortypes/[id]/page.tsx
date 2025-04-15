@@ -22,6 +22,7 @@ export default function ViewErrorTypePage({
 
   const [name, setName] = useState("");
   const [severity, setSeverity] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // <-- New
 
   useEffect(() => {
     loadErrorTypeData(p.id).then((d) => {
@@ -34,31 +35,33 @@ export default function ViewErrorTypePage({
   }, []);
 
   const handleSave = async () => {
+    setErrorMessage(""); // Clear before attempting
     try {
       if (!data.loaded || !data.errorType) return;
-  
-      const response = await fetch(`/api/errortypes/${data.errorType.id}`, {
+
+      const response = await fetch(`/api/errortypes/update`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          id: data.errorType.id,
           name,
           severity: parseInt(severity),
         }),
       });
-  
+
       if (!response.ok) {
-        throw new Error("Failed to update");
+        const err = await response.json();
+        throw new Error(err.error || "Failed to update");
       }
-  
+
       alert("Error updated successfully!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating:", error);
-      alert("Failed to update.");
+      setErrorMessage(error.message || "Failed to update.");
     }
   };
-  
 
   if (!data.loaded) {
     return (
@@ -78,6 +81,12 @@ export default function ViewErrorTypePage({
 
   return (
     <div>
+      {errorMessage && (
+        <Card shadow="sm" padding="md" radius="md" mb="md" withBorder>
+          <Text color="red">{errorMessage}</Text>
+        </Card>
+      )}
+
       <Card shadow="sm" padding="lg" radius="md" mb="md" withBorder>
         <TextInput
           label="Name"

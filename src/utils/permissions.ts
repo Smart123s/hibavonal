@@ -10,6 +10,11 @@ const permissions = {
             delete: false,
             edit:   false,
         },
+        errortype: {
+            create: false,
+            delete: false,
+            edit:   false,
+        },
     } as RolePermissions,
     maintainer: {
         ticket: {

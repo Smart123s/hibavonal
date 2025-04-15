@@ -2,6 +2,8 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
+import { hasPermission } from "@/utils/permissions";
+import { Role } from "@prisma/client";
 
 export type ErrorTypeData =
   | { loaded: false }
@@ -26,7 +28,15 @@ export async function loadErrorTypeData(id: string): Promise<ErrorTypeData> {
     return {
       loaded: true,
       errorType: null,
-      error: "Unauthorized",
+      error: "You must be logged in to view error types.",
+    };
+  }
+
+  if (!hasPermission(session.user.role as Role, "errortype", "edit")) {
+    return {
+      loaded: true,
+      errorType: null,
+      error: "You do not have permission to view or edit error types.",
     };
   }
 
@@ -43,7 +53,7 @@ export async function loadErrorTypeData(id: string): Promise<ErrorTypeData> {
     return {
       loaded: true,
       errorType: null,
-      error: "Error type not found",
+      error: "Error type not found.",
     };
   }
 
@@ -53,22 +63,41 @@ export async function loadErrorTypeData(id: string): Promise<ErrorTypeData> {
   };
 }
 
-export async function updateErrorData(id: string, data: { name: string; severity: number }) {
+export async function updateErrorData(
+  id: string,
+  data: { name: string; severity: number }
+): Promise<{ success: boolean; error?: string }> {
+  const session = await auth();
+
+  if (!session?.user) {
+    return { success: false, error: "You must be logged in to edit error types." };
+  }
+
+  
+  if (!hasPermission(session.user.role as Role, "errortype", "edit")) {
+    return { success: false, error: "You do not have permission to edit error types." };
+  }
+
   const existing = await prisma.errorType.findUnique({
     where: { id },
   });
 
   if (!existing) {
-    throw new Error("Error type not found");
+    return { success: false, error: "Error type not found." };
   }
 
-  const updated = await prisma.errorType.update({
-    where: { id },
-    data: {
-      name: data.name,
-      severity: data.severity,
-    },
-  });
+  try {
+    await prisma.errorType.update({
+      where: { id },
+      data: {
+        name: data.name,
+        severity: data.severity,
+      },
+    });
 
-  return updated;
+    return { success: true };
+  } catch (e) {
+    console.error("Update error:", e);
+    return { success: false, error: "An unexpected error occurred while updating." };
+  }
 }
