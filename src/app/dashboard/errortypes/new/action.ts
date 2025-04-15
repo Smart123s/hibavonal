@@ -2,16 +2,16 @@
 
 import { prisma } from "@/prisma";
 import { z } from "zod";
+import { auth } from "@/auth"; 
+import { hasPermission } from "@/utils/permissions";
+
 
 const errorTypeSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   severity: z
-    .string()
-    .refine((val) => !isNaN(Number(val)), { message: "Severity must be a number" })
-    .transform(Number)
-    .refine((num) => num >= 1 && num <= 10, {
-      message: "Severity must be between 1 and 10",
-    }),
+    .number()
+    .min(1, { message: "Severity must be at least 1" })
+    .max(10, { message: "Severity must be at most 10" }),
 });
 
 export type ErrorTypeState =
@@ -32,14 +32,14 @@ export type ErrorTypeState =
       };
     };
 
+
 export async function createErrorTypeAction(
   prevState: ErrorTypeState | null,
-  formData: FormData
+  formData: any 
+
 ): Promise<ErrorTypeState> {
-  const formInput = {
-    name: formData.get("name") as string,
-    severity: formData.get("severity") as string,
-  };
+  const formInput = formData;
+
 
   const parsed = errorTypeSchema.safeParse(formInput);
 
@@ -55,20 +55,40 @@ export async function createErrorTypeAction(
 
   const { name, severity } = parsed.data;
 
-  const newErrorType = await prisma.errorType.create({
-    data: {
-      name,
-      severity,
-    },
-  });
+  const session = await auth();
+  console.log("Session:", session);
 
-  return {
-    success: true,
-    data: {
-      id: newErrorType.id,
-      name: newErrorType.name,
-      severity: newErrorType.severity,
-    },
-    errors: null,
-  };
+  if (!session?.user || !hasPermission(session.user.role, "errortype", "create")) {
+    return {
+      success: false,
+      data: null,
+      errors: { general: "You do not have permission to create error types." },
+    };
+  }
+
+  try {
+    const newErrorType = await prisma.errorType.create({
+      data: {
+        name,
+        severity,
+      },
+    });
+
+    return {
+      success: true,
+      data: {
+        id: newErrorType.id,
+        name: newErrorType.name,
+        severity: newErrorType.severity,
+      },
+      errors: null,
+    };
+  } catch (error) {
+    console.error("Error creating error type:", error);
+    return {
+      success: false,
+      data: null,
+      errors: { general: "Server error" },
+    };
+  }
 }

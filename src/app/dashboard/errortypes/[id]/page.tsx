@@ -22,7 +22,7 @@ export default function ViewErrorTypePage({
 
   const [name, setName] = useState("");
   const [severity, setSeverity] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // <-- New
+  const [errorMessage, setErrorMessage] = useState(""); 
 
   useEffect(() => {
     loadErrorTypeData(p.id).then((d) => {
@@ -35,7 +35,7 @@ export default function ViewErrorTypePage({
   }, []);
 
   const handleSave = async () => {
-    setErrorMessage(""); // Clear before attempting
+    setErrorMessage("");
     try {
       if (!data.loaded || !data.errorType) return;
 

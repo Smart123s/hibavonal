@@ -1,28 +1,28 @@
-'use client'; 
+'use client';
 
-import { useSearchParams ,useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 const RoomDeletePage = () => {
   const searchParams = useSearchParams();
   const [roomId, setRoomId] = useState<string | null>(null);
   const router = useRouter();
+
   useEffect(() => {
     const id = searchParams.get('id');
     if (id) {
       setRoomId(id);
     } else {
-      console.error('Room ID is missing');
+      alert('Room ID is missing');
     }
   }, [searchParams]);
 
   const handleDelete = async () => {
-    //console.log('Room ID before sending request:', roomId);
-
     if (!roomId) {
-      console.error('Room ID is invalid or missing');
+      alert('Room ID is invalid or missing');
       return;
     }
+
     try {
       const response = await fetch('/api/errortypes/delete', {
         method: 'DELETE',
@@ -32,16 +32,18 @@ const RoomDeletePage = () => {
         body: JSON.stringify({ id: roomId }),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to delete room');
+        const message = result?.error || 'Failed to delete error type';
+        throw new Error(message);
       }
 
-      const deletedRoom = await response.json();
-      //console.log('Deleted Room:', deletedRoom);
-      //return<div><h1>{deletedRoom} Room deleted successfully</h1></div>
+      alert('Error type deleted successfully.');
       router.push('/dashboard/errortypes');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error occurred:', error);
+      alert(error.message || 'Something went wrong during deletion');
     }
   };
 
@@ -52,7 +54,7 @@ const RoomDeletePage = () => {
   return (
     <div>
       <h1>Delete error type</h1>
-      <button onClick={handleDelete} disabled={!roomId} >
+      <button onClick={handleDelete} disabled={!roomId}>
         Delete error type
       </button>
     </div>
