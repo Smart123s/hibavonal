@@ -31,7 +31,7 @@ export default function DashboardClientLayout({
     setActiveNav(pathname.split("/")[2] || "home");
   }, [pathname]);
 
-  const linksData = ["Home", "Tickets"];
+  const linksData = ["Home", "Tickets","RoomManagement","Errortypes"];
 
   const links = linksData.map((link) => (
     <NavLink
