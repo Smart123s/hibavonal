@@ -116,6 +116,7 @@ model Ticket {
   assignedUserId String?
   typeId         String?
   roomId         String?
+  errorTypeId    String?  @unique
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -125,6 +126,8 @@ model Ticket {
   user         User  @relation("TicketUser", fields: [userId], references: [id], onDelete: Cascade)
   assignedUser User? @relation("AssignedTickets", fields: [assignedUserId], references: [id], onDelete: SetNull)
   room         Room?  @relation("TicketRoom", fields: [roomId], references: [id], onDelete: SetNull)
+
+  errorType ErrorType? @relation(fields: [errorTypeId], references: [id], onDelete: SetNull)
 }
 
 model TicketType {
@@ -182,4 +185,12 @@ model EquipmentRequest {
   state RequestState @default(Requested)
 
   equipment RoomEquipment?
+}
+
+model ErrorType{
+  id          String @id @default(cuid())
+  name        String
+  severity    Int
+
+  ticket   Ticket? @relation
 }

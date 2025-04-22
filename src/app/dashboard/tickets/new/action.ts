@@ -85,7 +85,8 @@ export async function createTicketAction(prevState: TicketState | null, formData
     } catch (e: Error | unknown) {
         console.error("Database Error:", e ?? 'Error is null');
         return {
-            errors: { _form: ["Failed to create ticket."] },
+            
+            errors: { _form: ["Failed to create ticket."+e] },
         };
     }
 
