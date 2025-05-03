@@ -81,7 +81,9 @@ export default function LoginPage() {
               {devAccountsSeeded.seeded ? (
                   <div style={{display: "contents"}}>
                     <DevLoginButton handleSubmit={handleSubmit} role="student" />
-                    <DevLoginButton handleSubmit={handleSubmit} role="maintainer" />
+                    <DevLoginButton handleSubmit={handleSubmit} role="maintainer" suffix="alan" />
+                    <DevLoginButton handleSubmit={handleSubmit} role="maintainer" suffix="bob" />
+                    <DevLoginButton handleSubmit={handleSubmit} role="maintainer" suffix="charlie" />
                     <DevLoginButton handleSubmit={handleSubmit} role="leadMaintainer" />
                     <DevLoginButton handleSubmit={handleSubmit} role="admin" />
                   </div>

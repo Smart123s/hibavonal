@@ -1,10 +1,19 @@
-const permissions = {
+import {Role} from "@prisma/client";
+
+const permissions: {
+    [k in Role]: RolePermissions
+} = {
     student: {
         ticket: {
             create: true,
-            read: true,
+            readAll: false,
+            editAll: false,
+            assignAll: false,
+            readAssignedUser: false,
         },
-        ticketComment: {},
+        ticketComment: {
+            createForAny: true
+        },
         room: {
             create: false,
             delete: false,
@@ -18,10 +27,15 @@ const permissions = {
     } as RolePermissions,
     maintainer: {
         ticket: {
-            create: true,
-            read: true,
+            create: false,
+            readAll: false,
+            editAll: false,
+            assignAll: false,
+            readAssignedUser: false,
         },
-        ticketComment: {},
+        ticketComment: {
+            createForAny: true
+        },
         room: {
             create: false,
             delete: false,
@@ -35,12 +49,14 @@ const permissions = {
     } as RolePermissions,
     leadMaintainer: {
         ticket: {
-            create: true,
-            read: true,
+            create: false,
             readAll: true,
+            editAll: false,
+            assignAll: true,
+            readAssignedUser: true
         },
         ticketComment: {
-            create: true,
+            createForAny: true,
         },
         room: {
             create: true,
@@ -56,11 +72,13 @@ const permissions = {
     admin: {
         ticket: {
             create: true,
-            read: true,
             readAll: true,
+            editAll: true,
+            assignAll: true,
+            readAssignedUser: true,
         },
         ticketComment: {
-            create: true,
+            createForAny: true,
         },
         room: {
             create: true,
@@ -82,14 +100,40 @@ interface Permission {
     delete?: boolean;
     edit?: boolean;
 }
+type Permissions = typeof permissions;
+
 
 interface RolePermissions {
-    ticket: Permission;
-    ticketComment: Permission;
-    room: Permission;
-    errortype: Permission;
+    ticket: {
+        create: boolean,
+        readAll: boolean,
+        editAll: boolean,
+        assignAll: boolean,
+        readAssignedUser: boolean
+    },
+    ticketComment: {
+        createForAny: boolean
+    },
+    room: {
+        create: boolean,
+        delete: boolean,
+        edit: boolean
+    },
+    errortype: {
+        create: boolean,
+        delete: boolean,
+        edit: boolean
+    }
 }
 
-export function hasPermission(role: keyof typeof permissions, resource: keyof RolePermissions, permission: keyof Permission) {
-    return permissions[role][resource][permission] ?? false;
+export function hasPermission<
+    SRole extends keyof Permissions,
+    SResource extends keyof Permissions[SRole],
+    SPermission extends keyof Permissions[SRole][SResource]
+>(
+    roleName: SRole,
+    resourceName: SResource,
+    permissionName: SPermission
+): boolean {
+    return permissions[roleName][resourceName][permissionName] as boolean;
 }

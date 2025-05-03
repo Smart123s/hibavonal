@@ -19,7 +19,8 @@ const addBuiltInTicketTypes: Seeder = {
                     name: "Beküldve",
                     color: "#175dc5",
                     allowsEditing: true,
-                    allowsCommenting: true
+                    allowsCommenting: true,
+                    allowsAssigning: true,
                 },
                 {
                     id: TicketType.InProgress,
@@ -27,7 +28,8 @@ const addBuiltInTicketTypes: Seeder = {
                     name: "Folyamatban",
                     color: "#17bfc5",
                     allowsEditing: false,
-                    allowsCommenting: true
+                    allowsCommenting: true,
+                    allowsAssigning: true,
                 },
                 {
                     id: TicketType.Done,
@@ -35,7 +37,8 @@ const addBuiltInTicketTypes: Seeder = {
                     name: "Kész",
                     color: "#34C517",
                     allowsEditing: false,
-                    allowsCommenting: true
+                    allowsCommenting: true,
+                    allowsAssigning: false,
                 },
                 {
                     id: TicketType.Feedback,
@@ -43,7 +46,8 @@ const addBuiltInTicketTypes: Seeder = {
                     name: "Visszajelzés",
                     color: "#FC7910",
                     allowsEditing: false,
-                    allowsCommenting: true
+                    allowsCommenting: true,
+                    allowsAssigning: true,
                 },
                 {
                     id: TicketType.Rejected,
@@ -51,7 +55,8 @@ const addBuiltInTicketTypes: Seeder = {
                     name: "Elutasítva",
                     color: "#EC0E0E",
                     allowsEditing: false,
-                    allowsCommenting: false
+                    allowsCommenting: false,
+                    allowsAssigning: false,
                 }
             ]
         })

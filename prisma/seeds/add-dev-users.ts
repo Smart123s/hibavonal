@@ -7,8 +7,8 @@ export const DEV_EMAIL_DOMAIN = "23977f5b-7ba2-416d-977f-5b7ba2f16d38.example.co
 export function isDevEmail(email: string) {
     return email.endsWith(`@${DEV_EMAIL_DOMAIN}`)
 }
-export function getDevEmailFromRole(role: Role) {
-    return `${role}@${DEV_EMAIL_DOMAIN}`
+export function getDevEmailFromRole(role: Role, suffix?: string) {
+    return `${role}${suffix ? '.' + suffix : ''}@${DEV_EMAIL_DOMAIN}`
 }
 
 const addDevUsers: Seeder = {
@@ -44,8 +44,22 @@ const addDevUsers: Seeder = {
         await prisma.user.createMany({
             data: [
                 {
-                    name: 'Test Maintainer',
-                    email: getDevEmailFromRole('maintainer'),
+                    name: 'Test Maintainer Alan',
+                    email: getDevEmailFromRole('maintainer', 'alan'),
+                    emailVerified: new Date(),
+                    role: 'maintainer',
+                    createdAt: new Date(),
+                },
+                {
+                    name: 'Test Maintainer Bob',
+                    email: getDevEmailFromRole('maintainer', 'bob'),
+                    emailVerified: new Date(),
+                    role: 'maintainer',
+                    createdAt: new Date(),
+                },
+                {
+                    name: 'Test Maintainer Charlie',
+                    email: getDevEmailFromRole('maintainer', 'charlie'),
                     emailVerified: new Date(),
                     role: 'maintainer',
                     createdAt: new Date(),

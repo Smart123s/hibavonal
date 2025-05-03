@@ -11,14 +11,32 @@ import {
   GridCol,
   Container,
 } from "@mantine/core";
-import {Role} from "@prisma/client";
+import { Role, Prisma } from "@prisma/client";
 
 export default async function HomePage() {
   const session = await auth();
+
+  let queryRestrictions: Prisma.TicketWhereInput = {};
+  switch (session?.user.role) {
+    case Role.admin:
+    case Role.leadMaintainer:
+      break;
+    case Role.maintainer:
+      queryRestrictions = {
+        assignedUserId: session?.user.id,
+      }
+      break;
+    case Role.student:
+      queryRestrictions = {
+        userId: session?.user.id,
+      }
+      break;
+    default:
+      throw new Error("Ticket query restrictions not implemented for this role.")
+  }
+
   const tickets = await prisma.ticket.findMany({
-    where: {
-      userId: session?.user?.id,
-    },
+    where: queryRestrictions,
     include: {type: true, room: true}
   });
 

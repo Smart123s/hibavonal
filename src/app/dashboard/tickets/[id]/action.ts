@@ -11,11 +11,35 @@ export type TicketData = {
 } | {
     loaded: true,
     canSubmitComment: boolean,
+    canEdit: boolean,
+    canAssignToMaintainer: boolean,
     ticket: Prisma.TicketGetPayload<{
-        include: {
-            type: true, room: true, comments: {
-                include: {
-                    user: true
+        select: {
+            id: true,
+            userId: true,
+            title: true,
+            description: true,
+            type: true,
+            room: true,
+            assignedUser: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true
+                }
+            },
+            comments: {
+                select: {
+                    id: true,
+                    content: true,
+                    userId: true,
+                    user: {
+                        select: {
+                            id: true,
+                            role: true,
+                            name: true
+                        }
+                    }
                 }
             }
         }
@@ -40,13 +64,45 @@ export async function loadTicketData(id: string): Promise<TicketData> {
 
     const ticket =  await prisma.ticket.findUnique({
         where: {id},
-        include: {
-            type: true, room: true, comments: {
+        select: {
+            id: true,
+            userId: true,
+            title: true,
+            description: true,
+            type: true,
+            room: true,
+            assignedUser: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true
+                }
+            },
+            comments: {
+                select: {
+                    id: true,
+                    content: true,
+                    userId: true,
+                    user: {
+                        select: {
+                            id: true,
+                            role: true,
+                            name: true
+                        }
+                    }
+                }
+            }
+        },
+        /*include: {
+            type: true,
+            room: true,
+            assignedUser: true,
+            comments: {
                 include: {
                     user: true
                 }
             }
-        }
+        }*/
     });
 
     if (!ticket) {
@@ -57,7 +113,7 @@ export async function loadTicketData(id: string): Promise<TicketData> {
         };
     }
 
-    if (ticket.userId !== session?.user?.id && !hasPermission(session.user.role as Role, 'ticketComment', 'create')) {
+    if (ticket.userId !== session?.user?.id && !hasPermission(session.user.role as Role, 'ticketComment', 'createForAny')) {
         return {
             loaded: true,
             ticket: null,
@@ -65,14 +121,22 @@ export async function loadTicketData(id: string): Promise<TicketData> {
         };
     }
 
-    console.log(ticket.type)
-    console.log(ticket.type?.allowsCommenting)
-
     return {
         loaded: true,
-        ticket: ticket,
-        canSubmitComment: ticket.type?.allowsCommenting ?? false,
-        userId: session?.user?.id,
+        ticket,
+        canSubmitComment: (ticket.type?.allowsCommenting ?? false) &&
+            (
+                hasPermission(session.user.role as Role, "ticketComment", "createForAny")
+                || session.user.id === ticket.userId
+            ),
+        canEdit: (ticket.type?.allowsEditing ?? false) &&
+            (
+                hasPermission(session.user.role as Role, "ticket", "editAll") ||
+                session.user.id === ticket.userId
+            ),
+        canAssignToMaintainer: (ticket.type?.allowsAssigning ?? false) &&
+            hasPermission(session.user.role as Role, "ticket", "assignAll"),
+        userId: session?.user?.id
     }
 }
 
@@ -134,7 +198,7 @@ export async function sendComment(
     if (
         ticket.userId !== session.user.id &&
         ticket.assignedUserId !== session.user.id &&
-        !hasPermission(session.user.role as Role, 'ticketComment', 'create')
+        !hasPermission(session.user.role as Role, 'ticketComment', 'createForAny')
     ) {
         return {
             success: false,

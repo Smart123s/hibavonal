@@ -137,6 +137,7 @@ model TicketType {
   color            String @default("#17C5C5")
   allowsEditing    Boolean @default(false)
   allowsCommenting Boolean @default(true)
+  allowsAssigning  Boolean @default(false)
 
   tickets Ticket[]
 }

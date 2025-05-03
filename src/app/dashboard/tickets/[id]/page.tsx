@@ -6,6 +6,7 @@ import React, {startTransition, useActionState, useEffect, useRef, useState} fro
 import {CommentSendState, loadTicketData, sendComment, TicketData} from "@/app/dashboard/tickets/[id]/action";
 import { IconSend } from "@tabler/icons-react"
 import RedirectButton from "@/app/components/redirectButton";
+import {hasPermission} from "@/utils/permissions";
 
 export default function ViewTicketPage(
   {
@@ -54,21 +55,33 @@ export default function ViewTicketPage(
           </Group>
         ) : (
           <>
-            {data.ticket?.type?.allowsEditing ? (
-              <Container
-                fluid
-                style={{
-                  display: "flex",
-                  justifyContent: "end",
-                  alignItems: "center",
-                  marginBottom: "16px",
-                }}
-              >
+            <Container
+              fluid
+              style={{
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "end",
+                marginBottom: "16px",
+              }}
+            >
+              {data.ticket && data.canEdit ? (
                 <RedirectButton url={`/dashboard/tickets/${p.id}/edit`}>Edit</RedirectButton>
-              </Container>
-            ) : null}
+              ) : null}
+              {data.ticket && data.canAssignToMaintainer ? (
+                <Container m={0} fluid style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "var(--mantine-spacing-md)"
+                }}>
+                  {data.ticket && data.ticket.assignedUser ? (
+                    <Text>Assigned to {data.ticket.assignedUser.name} ({data.ticket.assignedUser.email})</Text>
+                  ) : null}
+                  <RedirectButton url={`/dashboard/tickets/${p.id}/assign`}>{data.ticket.assignedUser == null ? "Assign" : "Reassign"}</RedirectButton>
+                </Container>
+              ) : null}
+            </Container>
             <Card shadow="sm" padding="lg" radius="md" mb="md" withBorder>
-              {data.ticket != null ? (
+              {data.ticket ? (
                 <>
                   <div
                     style={{display: "flex", alignItems: "center", marginBottom: "1rem"}}
@@ -106,7 +119,9 @@ export default function ViewTicketPage(
                     </div>
                   ))}
                 </>
-              ) : null}
+              ) : (
+                <Text>{ data.error }</Text>
+              )}
             </Card>
             <hr style={{ color: "var(--mantine-color-dark-4)" }}/>
             {data.ticket ? (
