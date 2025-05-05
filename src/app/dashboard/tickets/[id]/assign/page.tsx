@@ -5,6 +5,8 @@ import RedirectButton from "@/app/components/redirectButton";
 import {prisma} from "@/prisma";
 import {Role} from "@prisma/client";
 import {save} from "@/app/dashboard/tickets/[id]/assign/action";
+import {auth} from "@/auth";
+import {TicketPolicy} from "@/utils/policy";
 
 export default async function AssignTicketPage(
   {
@@ -14,6 +16,7 @@ export default async function AssignTicketPage(
   }
 ) {
   const p = await params;
+  const session = await auth();
 
   const ticket = await prisma.ticket.findFirst({
     where: {
@@ -30,6 +33,13 @@ export default async function AssignTicketPage(
       <RedirectButton url="/dashboard/tickets" w="min-content" mt="md">Back</RedirectButton>
     </Card>
   );
+
+  if(!session || !TicketPolicy.canAssignToMaintainer(ticket, session.user)) return (
+    <Card shadow="sm" padding="lg" radius="md" mb="md" withBorder>
+      <Text>Ticket cannot be assigned.</Text>
+      <RedirectButton url={`/dashboard/tickets/${ticket.id}`} w="min-content" mt="md">Back</RedirectButton>
+    </Card>
+  )
 
   const maintainers = (await prisma.user.findMany({
     select: {

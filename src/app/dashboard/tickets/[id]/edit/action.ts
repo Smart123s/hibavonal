@@ -3,6 +3,8 @@
 import {z} from "zod";
 import {prisma} from "@/prisma";
 import {redirect} from "next/navigation";
+import {auth} from "@/auth";
+import {TicketPolicy} from "@/utils/policy";
 
 const schema = z.object({
     id: z.string(),
@@ -30,7 +32,9 @@ export async function save(formData: FormData) {
         }
     });
 
-    if(!ticket.type?.allowsEditing) throw new Error("Ticket cannot be edited.");
+    const session = await auth();
+
+    if(!session || !TicketPolicy.canEdit(ticket, session.user)) throw new Error("Ticket cannot be edited.");
 
     await prisma.ticket.update({
         where: {

@@ -5,6 +5,7 @@ import {prisma} from "@/prisma";
 import {Prisma, Role} from "@prisma/client";
 import {z} from "zod";
 import {hasPermission} from "@/utils/permissions";
+import {TicketPolicy} from "@/utils/policy";
 
 export type TicketData = {
     loaded: false
@@ -124,18 +125,9 @@ export async function loadTicketData(id: string): Promise<TicketData> {
     return {
         loaded: true,
         ticket,
-        canSubmitComment: (ticket.type?.allowsCommenting ?? false) &&
-            (
-                hasPermission(session.user.role as Role, "ticketComment", "createForAny")
-                || session.user.id === ticket.userId
-            ),
-        canEdit: (ticket.type?.allowsEditing ?? false) &&
-            (
-                hasPermission(session.user.role as Role, "ticket", "editAll") ||
-                session.user.id === ticket.userId
-            ),
-        canAssignToMaintainer: (ticket.type?.allowsAssigning ?? false) &&
-            hasPermission(session.user.role as Role, "ticket", "assignAll"),
+        canSubmitComment: TicketPolicy.canSubmitComment(ticket, session.user),
+        canEdit: TicketPolicy.canEdit(ticket, session.user),
+        canAssignToMaintainer: TicketPolicy.canAssignToMaintainer(ticket, session.user),
         userId: session?.user?.id
     }
 }

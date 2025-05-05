@@ -3,6 +3,8 @@ import {Button, Card, Container, Text, Textarea, TextInput} from "@mantine/core"
 import {prisma} from "@/prisma";
 import RedirectButton from "@/app/components/redirectButton";
 import {save} from "@/app/dashboard/tickets/[id]/edit/action";
+import {TicketPolicy} from "@/utils/policy";
+import {auth} from "@/auth";
 
 export default async function EditTicketPage(
   {
@@ -12,6 +14,7 @@ export default async function EditTicketPage(
   }
 ) {
   const p = await params;
+  const session = await auth();
 
   const ticket = await prisma.ticket.findFirst({
     where: {
@@ -29,12 +32,12 @@ export default async function EditTicketPage(
     </Card>
   );
 
-  if(!ticket.type?.allowsEditing) return (
+  if(!session || !TicketPolicy.canEdit(ticket, session.user)) return (
     <Card shadow="sm" padding="lg" radius="md" mb="md" withBorder>
       <Text>Ticket cannot be edited.</Text>
       <RedirectButton url={`/dashboard/tickets/${p.id}`} w="min-content" mt="md">Back</RedirectButton>
     </Card>
-  );
+  )
 
   return (
     <>

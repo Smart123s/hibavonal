@@ -6,7 +6,6 @@ import React, {startTransition, useActionState, useEffect, useRef, useState} fro
 import {CommentSendState, loadTicketData, sendComment, TicketData} from "@/app/dashboard/tickets/[id]/action";
 import { IconSend } from "@tabler/icons-react"
 import RedirectButton from "@/app/components/redirectButton";
-import {hasPermission} from "@/utils/permissions";
 
 export default function ViewTicketPage(
   {
