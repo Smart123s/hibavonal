@@ -1,6 +1,5 @@
 "use client";
 import {ActionIcon, Badge, Card, Container, Group, Loader, Text, Textarea} from "@mantine/core";
-import {loremIpsum} from "lorem-ipsum";
 import {roleToHumanReadable} from "@/utils/roles";
 import React, {startTransition, useActionState, useEffect, useRef, useState} from "react";
 import {CommentSendState, loadTicketData, sendComment, TicketData} from "@/app/dashboard/tickets/[id]/action";
@@ -110,13 +109,6 @@ export default function ViewTicketPage(
                   </Text>
                   {[...Array(4)].map((_, index) => (
                     <div key={index}>
-                      <br/>
-                      <Text size="sm" c="dimmed">
-                        {loremIpsum({
-                          count: 40,
-                          units: "words",
-                        })}
-                      </Text>
                     </div>
                   ))}
                 </>
