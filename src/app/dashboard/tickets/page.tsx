@@ -37,7 +37,7 @@ export default async function HomePage() {
 
   const tickets = await prisma.ticket.findMany({
     where: queryRestrictions,
-    include: {type: true, room: true}
+    include: {type: true, room: true,errorType: true,}
   });
 
   return (
@@ -82,10 +82,17 @@ export default async function HomePage() {
                       {ticket.type.name}
                     </Badge>
                   ) : null}
+
+                
+                  {ticket.errorType !== null ? ( 
+                    <Badge color="red" autoContrast>
+                      {ticket.errorType.name}
+                    </Badge>
+                  ) : null}
                 </Group>
               </Group>
               <Text size="sm" c="dimmed">
-                Placeholder description text
+                {ticket.description}
               </Text>
               <RedirectButton
                 color="blue"

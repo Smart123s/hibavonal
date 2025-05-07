@@ -10,7 +10,7 @@ import {
   Alert, NativeSelect,
 } from "@mantine/core";
 import {useActionState, useEffect, useState} from "react";
-import {createTicketAction, loadRooms, RoomOption, TicketState} from "./action";
+import {createTicketAction, loadRooms, RoomOption, TicketState,loadErrorTypes,ErrorTypeOption,} from "./action";
 import { showNotification } from "@mantine/notifications";
 import { redirect } from "next/navigation";
 
@@ -33,9 +33,11 @@ export default function NewTicketPage() {
   }, [result]);
 
   const [roomOptions, setRoomOptions] = useState<RoomOption[] | null>(null);
+  const [errorTypeOptions, setErrorTypeOptions] = useState<ErrorTypeOption[] | null>(null);
 
   useEffect(() => {
-    loadRooms().then(options => setRoomOptions(options))
+    loadRooms().then(options => setRoomOptions(options));
+    loadErrorTypes().then((options) => setErrorTypeOptions(options));
   }, []);
 
   return (
@@ -72,6 +74,12 @@ export default function NewTicketPage() {
           error={errors && "title" in errors ? errors.title : undefined}
         />
         <NativeSelect label="Room" name="room" withAsterisk data={roomOptions !== null ? roomOptions : ['Loading...']} disabled={roomOptions === null} />
+        <NativeSelect
+          label="Error Type"
+          name="errorTypeId"
+          data={errorTypeOptions !== null ? [{ label: "None", value: "" }, ...errorTypeOptions] : ["Loading..."]}
+          disabled={errorTypeOptions === null}
+        />
         <Textarea
           label="Description"
           placeholder="Enter ticket description"
@@ -84,7 +92,7 @@ export default function NewTicketPage() {
           }
         />
         <Button type="submit" mt="md" disabled={roomOptions === null}>
-          {roomOptions === null ? "Loading..." : "Submit"}
+          {roomOptions === null|| errorTypeOptions === null ? "Loading..." : "Submit"}
         </Button>{" "}
       </form>
     </div>

@@ -12,6 +12,7 @@ const schema = z.object({
     title: z.string().min(1, { message: "Title is required" }),
     room: z.string().min(1, { message: "Room is required" }),
     description: z.string().min(1, { message: "Description is required" }),
+    errorTypeId: z.string().optional().nullable(),
 });
 
 export interface TicketState {
@@ -25,6 +26,7 @@ export async function createTicketAction(prevState: TicketState | null, formData
         title: formData.get('title'),
         room: formData.get('room'),
         description: formData.get('description'),
+        errorTypeId: formData.get("errorTypeId") || null,
     });
 
     if (!validatedFields.success) {
@@ -34,6 +36,7 @@ export async function createTicketAction(prevState: TicketState | null, formData
     }
 
     const { title, room, description } = validatedFields.data;
+    const errorTypeId = formData.get("errorTypeId")?.toString() || null;
 
     const session = await auth();
     if (!session || !session.user) {
@@ -79,7 +82,8 @@ export async function createTicketAction(prevState: TicketState | null, formData
                 description,
                 typeId: TicketType.SentIn,
                 userId: session.user.id as string,
-                roomId: room
+                roomId: room,
+                errorTypeId: errorTypeId,
             },
         });
     } catch (e: Error | unknown) {
@@ -102,7 +106,24 @@ export type RoomOption = {
     label: string;
     value: string;
 }
+export type ErrorTypeOption = {
+  label: string;
+  value: string;
+};
 
+export async function loadErrorTypes(): Promise<ErrorTypeOption[]> {
+  const result = await prisma.errorType.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+
+  return result.map((et) => ({
+    label: et.name,
+    value: et.id,
+  }));
+}
 export async function loadRooms(): Promise<RoomOption[]> {
     const session = await auth();
     if (!session || !session.user) {

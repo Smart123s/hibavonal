@@ -44,7 +44,7 @@ export default function ViewTicketPage(
   useEffect(() => {
     console.log("Hello")
     loadTicketData(p.id).then(d => setData(d));
-  }, [])
+  }, [p.id])
 
   return (
     <div>
@@ -63,7 +63,9 @@ export default function ViewTicketPage(
                 marginBottom: "16px",
               }}
             >
-              {data.ticket && data.canEdit ? (
+
+              
+              {data.ticket && !data.canEdit  ? (
                 <RedirectButton url={`/dashboard/tickets/${p.id}/edit`}>Edit</RedirectButton>
               ) : null}
               {data.ticket && data.canAssignToMaintainer ? (

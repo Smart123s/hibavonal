@@ -1,5 +1,5 @@
 "use server";
-import {Button, Card, Container, Text, Textarea, TextInput} from "@mantine/core";
+import {Button, Card, Container, Text, Textarea, TextInput, Select} from "@mantine/core";
 import {prisma} from "@/prisma";
 import RedirectButton from "@/app/components/redirectButton";
 import {save} from "@/app/dashboard/tickets/[id]/edit/action";
@@ -21,7 +21,8 @@ export default async function EditTicketPage(
       id: p.id,
     },
     include: {
-      type: true
+      type: true,
+      errorType: true
     }
   })
 
@@ -32,13 +33,13 @@ export default async function EditTicketPage(
     </Card>
   );
 
-  if(!session || !TicketPolicy.canEdit(ticket, session.user)) return (
+  if(!session || TicketPolicy.canEdit(ticket, session.user)) return (
     <Card shadow="sm" padding="lg" radius="md" mb="md" withBorder>
       <Text>Ticket cannot be edited.</Text>
       <RedirectButton url={`/dashboard/tickets/${p.id}`} w="min-content" mt="md">Back</RedirectButton>
     </Card>
   )
-
+const errorTypes=await prisma.errorType.findMany();
   return (
     <>
       <Container
@@ -70,6 +71,20 @@ export default async function EditTicketPage(
             required
             defaultValue={ticket.description}
             mt="sm"
+          />
+           <Select
+            label="Error Type"
+            name="errorTypeId"
+            data={[
+              { value: "", label: "None" },
+              ...errorTypes.map(e => ({
+                value: e.id,
+                label: e.name
+              }))
+            ]}
+            defaultValue={ticket.errorType?.id || ""}
+            mt="sm"
+            clearable
           />
           <Button type="submit" mt="xl">
             Save

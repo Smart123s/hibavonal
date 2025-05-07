@@ -10,6 +10,7 @@ const schema = z.object({
     id: z.string(),
     title: z.string().min(1, { message: "Title is required" }),
     description: z.string().min(1, { message: "Description is required" }),
+    errorTypeId: z.string().optional().nullable(),
 })
 
 export async function save(formData: FormData) {
@@ -17,6 +18,7 @@ export async function save(formData: FormData) {
         id: formData.get("id"),
         title: formData.get("title"),
         description: formData.get("description"),
+        errorTypeId: formData.get("errorTypeId")?.toString() || null
     })
 
     if(!validatedFields.success) {
@@ -28,13 +30,14 @@ export async function save(formData: FormData) {
             id: validatedFields.data.id
         },
         include: {
-            type: true
+            type: true,
+            errorType: true
         }
     });
 
     const session = await auth();
 
-    if(!session || !TicketPolicy.canEdit(ticket, session.user)) throw new Error("Ticket cannot be edited.");
+    if(!session || TicketPolicy.canEdit(ticket, session.user)) throw new Error("Ticket cannot be edited.");
 
     await prisma.ticket.update({
         where: {
@@ -43,6 +46,9 @@ export async function save(formData: FormData) {
         data: {
             title: validatedFields.data.title,
             description: validatedFields.data.description,
+            errorType: validatedFields.data.errorTypeId
+            ? { connect: { id: validatedFields.data.errorTypeId } }
+            : { disconnect: true },
         }
     });
 
