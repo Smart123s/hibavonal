@@ -13,8 +13,8 @@ import "@mantine/notifications/styles.css";
 import { SessionProvider } from "next-auth/react";
 
 export const metadata = {
-  title: "My Mantine app",
-  description: "I have followed setup instructions carefully",
+  title: "Hibavonal",
+  description: "Report anything broken",
 };
 
 export default function RootLayout({
