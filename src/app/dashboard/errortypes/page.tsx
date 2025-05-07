@@ -31,7 +31,7 @@ export default async function HomePage() {
         <Text fw={700} size="xl">
           Error types
         </Text>
-        {hasPermission(session?.user.role as Role, "ticket", "create") && (
+        {hasPermission(session?.user.role as Role, "errortype", "create") && (
           <RedirectButton url="/dashboard/errortypes/new/">
             Create new error type
           </RedirectButton>
@@ -59,7 +59,7 @@ export default async function HomePage() {
       </RedirectButton>
       
 
-      {hasPermission(session?.user.role as Role, "ticket", "create") && (
+      {hasPermission(session?.user.role as Role, "errortype", "delete") && (
           <RedirectButton color="red" 
           url={`/dashboard/errortypes/delete?id=${errorType.id}`}
           >

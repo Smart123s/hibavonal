@@ -39,7 +39,7 @@ export async function updateRoomData(id: string, roomData: any) {
 
   // Ensure the user has permission to edit room data
   const session = await auth();
-  if (!session?.user || !hasPermission(session.user.role, "room", "edit")) {
+  if (!session?.user || !hasPermission(session.user.role as Role, "room", "edit")) {
     throw new Error("You do not have permission to edit rooms.");
   }
 

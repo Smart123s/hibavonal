@@ -1,6 +1,8 @@
 import RedirectButton from "@/app/components/redirectButton";
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
+import {hasPermission} from "@/utils/permissions";
+import {Role,Prisma} from "@prisma/client";
 import {
   Badge,
   Card,
@@ -14,7 +16,32 @@ import {
 
 export default async function HomePage() {
   const session = await auth();
-  const rooms = await prisma.room.findMany();
+
+  ///
+  let queryRestrictions: Prisma.RoomWhereInput = {};
+
+  switch (session?.user.role) {
+    case Role.admin:
+    case Role.leadMaintainer:
+    case Role.maintainer:
+      break;
+  
+    case Role.student:
+      queryRestrictions = {
+        users: {
+          some: {
+            id: session.user.id,
+          },
+        },
+      };
+      break;
+  
+    default:
+      throw new Error("Room query restrictions not implemented for this role.");
+  }
+    const rooms = await prisma.room.findMany({where: queryRestrictions});
+  ////
+  //const rooms = await prisma.room.findMany();
 
   return (
     <div>
@@ -41,7 +68,9 @@ export default async function HomePage() {
               <Text size="sm" c="dimmed">
                 {room.level ?? "Ground Floor"}
               </Text>
+              {hasPermission(session?.user.role as Role, "room", "delete") && (
               <Stack mt="md">
+                
                 <RedirectButton
                   color="blue"
                   fullWidth
@@ -58,13 +87,13 @@ export default async function HomePage() {
                 >
                   Delete Room
                 </RedirectButton>
-              </Stack>
+              </Stack>)}
             </Card>
           </GridCol>
         ))}
       </Grid>
 
-      {/* New Room Button */}
+      {hasPermission(session?.user.role as Role, "room", "create") && (
       <RedirectButton
         color="green"
         fullWidth
@@ -73,7 +102,7 @@ export default async function HomePage() {
         url="/dashboard/roommanagement/new"
       >
         Add New Room
-      </RedirectButton>
+      </RedirectButton>)}
     </div>
   );
 }

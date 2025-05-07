@@ -14,7 +14,7 @@ export async function deleteRoomAction(id: string) {
 
     const role = session.user.role;
     console.log(`User role: ${role}`); 
-    const isAllowed = hasPermission(Role, "errortype", "delete");
+    const isAllowed = hasPermission(session.user.role as Role, "errortype", "delete");
 
     if (!isAllowed) {
       console.error("User does not have delete permission");

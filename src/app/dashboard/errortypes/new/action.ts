@@ -1,5 +1,5 @@
 "use server";
-
+import { Role } from "@prisma/client";
 import { prisma } from "@/prisma";
 import { z } from "zod";
 import { auth } from "@/auth"; 
@@ -58,7 +58,7 @@ export async function createErrorTypeAction(
   const session = await auth();
   console.log("Session:", session);
 
-  if (!session?.user || !hasPermission(session.user.role, "errortype", "create")) {
+  if (!session?.user || !hasPermission(session.user.role as Role, "errortype", "create")) {
     return {
       success: false,
       data: null,

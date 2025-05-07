@@ -1,5 +1,5 @@
 "use server";
-
+import { Role } from "@prisma/client";
 import { auth } from "@/auth";
 import { hasPermission } from "@/utils/permissions";
 import { prisma } from "@/prisma";
@@ -10,7 +10,7 @@ export async function deleteRoomAction(id: string) {
     
     // Check that user and role are present
     const role = session?.user?.role;
-    if (!session?.user || !role || !hasPermission(role, "room", "delete")) {
+    if (!session?.user || !role || !hasPermission(session.user.role as Role, "room", "delete")) {
       throw new Error("You do not have permission to delete rooms.");
     }
 
