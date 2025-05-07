@@ -1,8 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import RedirectButton from "@/app/components/redirectButton";
-import { auth } from "@/auth";
-import { prisma } from "@/prisma";
-import {hasPermission} from "@/utils/permissions";
-import {Role,Prisma} from "@prisma/client";
 import {
   Badge,
   Card,
@@ -13,35 +12,27 @@ import {
   Container,
   Stack,
 } from "@mantine/core";
+import { Role } from "@prisma/client";
+import { hasPermission } from "@/utils/permissions";
 
-export default async function HomePage() {
-  const session = await auth();
+export default function HomePage() {
+  const [rooms, setRooms] = useState<any[]>([]);
+  const [role, setRole] = useState<Role | null>(null);
 
-  ///
-  let queryRestrictions: Prisma.RoomWhereInput = {};
+  useEffect(() => {
+    async function loadRooms() {
+      const res = await fetch("/api/rooms");
+      if (res.ok) {
+        const data = await res.json();
+        setRooms(data.rooms);
+        setRole(data.role);
+      } else {
+        console.error("Failed to fetch rooms");
+      }
+    }
 
-  switch (session?.user.role) {
-    case Role.admin:
-    case Role.leadMaintainer:
-    case Role.maintainer:
-      break;
-  
-    case Role.student:
-      queryRestrictions = {
-        users: {
-          some: {
-            id: session.user.id,
-          },
-        },
-      };
-      break;
-  
-    default:
-      throw new Error("Room query restrictions not implemented for this role.");
-  }
-    const rooms = await prisma.room.findMany({where: queryRestrictions});
-  ////
-  //const rooms = await prisma.room.findMany();
+    loadRooms();
+  }, []);
 
   return (
     <div>
@@ -54,9 +45,7 @@ export default async function HomePage() {
           marginBottom: "16px",
         }}
       >
-        <Text fw={700} size="xl">
-          Rooms
-        </Text>
+        <Text fw={700} size="xl">Rooms</Text>
       </Container>
       <Grid>
         {rooms.map((room) => (
@@ -68,41 +57,42 @@ export default async function HomePage() {
               <Text size="sm" c="dimmed">
                 {room.level ?? "Ground Floor"}
               </Text>
-              {hasPermission(session?.user.role as Role, "room", "delete") && (
-              <Stack mt="md">
-                
-                <RedirectButton
-                  color="blue"
-                  fullWidth
-                  radius="md"
-                  url={`/dashboard/roomaction/edit?id=${room.id}`} 
-                >
-                  View Room
-                </RedirectButton>
-                <RedirectButton
-                  color="red"
-                  fullWidth
-                  radius="md"
-                  url={`/dashboard/roomaction/roomdelete?id=${room.id}`} 
-                >
-                  Delete Room
-                </RedirectButton>
-              </Stack>)}
+              {role && hasPermission(role, "room", "delete") && (
+                <Stack mt="md">
+                  <RedirectButton
+                    color="blue"
+                    fullWidth
+                    radius="md"
+                    url={`/dashboard/roomaction/edit?id=${room.id}`}
+                  >
+                    View Room
+                  </RedirectButton>
+                  <RedirectButton
+                    color="red"
+                    fullWidth
+                    radius="md"
+                    url={`/dashboard/roomaction/roomdelete?id=${room.id}`}
+                  >
+                    Delete Room
+                  </RedirectButton>
+                </Stack>
+              )}
             </Card>
           </GridCol>
         ))}
       </Grid>
 
-      {hasPermission(session?.user.role as Role, "room", "create") && (
-      <RedirectButton
-        color="green"
-        fullWidth
-        mt="md"
-        radius="md"
-        url="/dashboard/roommanagement/new"
-      >
-        Add New Room
-      </RedirectButton>)}
+      {role && hasPermission(role, "room", "create") && (
+        <RedirectButton
+          color="green"
+          fullWidth
+          mt="md"
+          radius="md"
+          url="/dashboard/roommanagement/new"
+        >
+          Add New Room
+        </RedirectButton>
+      )}
     </div>
   );
 }

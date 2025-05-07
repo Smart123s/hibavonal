@@ -22,7 +22,7 @@ export interface RoomState {
 export async function createRoomAction(prevState: RoomState | null, formData: FormData) {
     const validatedFields = schema.safeParse({
         name: formData.get('name'),
-        level: parseInt(formData.get('level')),
+        level: parseInt(formData.get('level') as string),
         roomType: formData.get('roomType'),
     });
 

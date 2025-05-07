@@ -1,7 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import RedirectButton from "@/app/components/redirectButton";
-import {auth} from "@/auth";
-import {prisma} from "@/prisma";
-import {hasPermission} from "@/utils/permissions";
 import {
   Badge,
   Card,
@@ -11,11 +11,33 @@ import {
   GridCol,
   Container,
 } from "@mantine/core";
-import {Role} from "@prisma/client";
+import { Role } from "@prisma/client";
+import { hasPermission } from "@/utils/permissions";
 
-export default async function HomePage() {
-  const session = await auth();
-  const errorTypes = await prisma.errorType.findMany();
+type ErrorType = {
+  id: string;
+  name: string;
+  severity: number;
+};
+
+export default function HomePage() {
+  const [errorTypes, setErrorTypes] = useState<ErrorType[]>([]);
+  const [role, setRole] = useState<Role | null>(null);
+
+  useEffect(() => {
+    async function fetchErrorTypes() {
+      const res = await fetch("/api/errortypes");
+      if (res.ok) {
+        const data = await res.json();
+        setErrorTypes(data.errorTypes);
+        setRole(data.role);
+      } else {
+        console.error("Failed to fetch error types");
+      }
+    }
+
+    fetchErrorTypes();
+  }, []);
 
   return (
     <div>
@@ -31,45 +53,44 @@ export default async function HomePage() {
         <Text fw={700} size="xl">
           Error types
         </Text>
-        {hasPermission(session?.user.role as Role, "errortype", "create") && (
+        {role && hasPermission(role, "errortype", "create") && (
           <RedirectButton url="/dashboard/errortypes/new/">
             Create new error type
           </RedirectButton>
         )}
       </Container>
       <Grid>
-      {errorTypes.map((errorType) => (
-  <GridCol span={{ base: 12, md: 6, lg: 3 }} key={errorType.id}>
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Group justify="space-between" mb="xs">
-        <Text fw={500}>{errorType.name}</Text>
-        <Badge color="red" autoContrast>
-          Severity: {errorType.severity}
-        </Badge>
-      </Group>
+        {errorTypes.map((errorType) => (
+          <GridCol span={{ base: 12, md: 6, lg: 3 }} key={errorType.id}>
+            <Card shadow="sm" padding="lg" radius="md" withBorder>
+              <Group justify="space-between" mb="xs">
+                <Text fw={500}>{errorType.name}</Text>
+                <Badge color="red" autoContrast>
+                  Severity: {errorType.severity}
+                </Badge>
+              </Group>
 
-      <RedirectButton
-        color="blue"
-        fullWidth
-        mt="md"
-        radius="md"
-        url={"/dashboard/errortypes/" + errorType.id}
-      >
-        View details
-      </RedirectButton>
-      
+              <RedirectButton
+                color="blue"
+                fullWidth
+                mt="md"
+                radius="md"
+                url={`/dashboard/errortypes/${errorType.id}`}
+              >
+                View details
+              </RedirectButton>
 
-      {hasPermission(session?.user.role as Role, "errortype", "delete") && (
-          <RedirectButton color="red" 
-          url={`/dashboard/errortypes/delete?id=${errorType.id}`}
-          >
-            Delete
-          </RedirectButton>
-        )}
-    </Card>
-  </GridCol>
-))}
-
+              {role && hasPermission(role, "errortype", "delete") && (
+                <RedirectButton
+                  color="red"
+                  url={`/dashboard/errortypes/delete?id=${errorType.id}`}
+                >
+                  Delete
+                </RedirectButton>
+              )}
+            </Card>
+          </GridCol>
+        ))}
       </Grid>
     </div>
   );

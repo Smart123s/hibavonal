@@ -2,22 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/prisma";
 import { deleteRoomAction } from "@/app/dashboard/errortypes/delete/action";
 import defineRoute from "@omer-x/next-openapi-route-handler";
-import { z } from "zod";
+import { z } from "zod"; // Import Zod for validation
 
 export const { DELETE } = defineRoute({
-  operationId: "deleteErrorType",
+  operationId: "deleteRoom",
   method: "DELETE",
-  summary: "Delete an error type",
-  description: "Deletes a specific error type by ID",
-  tags: ["Error Types"],
-  requestBody: z.object({
-    id: z.string().min(1, { message: "ID is required" }),
-  }),
-  action: async ({ body }) => {
-    const { id } = body;
+  summary: "Deletes a room by ID if it exists.",
+  description: "Deletes a room by ID if it exists.",
+  tags: ["Rooms"],
 
-    if (!id) {
-      return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+  queryParams: z.object({
+    id: z.string().min(1, { message: "Room ID is required" }),
+  }),
+
+  action: async (source, request) => {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
+    if (!id || id.trim().length === 0) {
+      return NextResponse.json({ error: "Room ID is required" }, { status: 400 });
     }
 
     const deletedRoom = await deleteRoomAction(id);
@@ -28,12 +30,14 @@ export const { DELETE } = defineRoute({
 
     return NextResponse.json({ success: true });
   },
+
   responses: {
-    200: { description: "Error type deleted successfully", content: "" },
+    200: { description: "Room deleted successfully", content: "" },
     400: { description: "Bad request, missing ID" },
-    404: { description: "Error type not found" },
+    404: { description: "Room not found" },
     500: { description: "Internal server error" },
   },
+
   handleErrors: (errorType) => {
     switch (errorType) {
       case "UNKNOWN_ERROR":

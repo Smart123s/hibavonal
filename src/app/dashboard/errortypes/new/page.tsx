@@ -91,7 +91,13 @@ export default function NewErrorTypePage() {
           name="severity"
           required
           value={severity}
-          onChange={(val) => setSeverity(val ?? "")}
+          onChange={(val) => {
+            if (typeof val === "number" || val === "") {
+              setSeverity(val);
+            } else {
+              setSeverity("");
+            }
+          }}
           error={errors.severity}
         />
         <Button type="submit" mt="md">

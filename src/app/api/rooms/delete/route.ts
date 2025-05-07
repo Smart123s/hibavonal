@@ -1,5 +1,3 @@
-"use server";
-
 import defineRoute from "@omer-x/next-openapi-route-handler";
 import { z } from "zod";
 import { deleteRoomAction } from "@/app/dashboard/roomaction/roomdelete/action";
@@ -12,10 +10,25 @@ export const { DELETE } = defineRoute({
   summary: "Delete a room",
   description: "Deletes a room by ID if it exists.",
   tags: ["Rooms"],
-  requestBody: z.object({
+
+  // Define queryParams to accept 'id' from query parameters
+  queryParams: z.object({
     id: z.string().min(1, { message: "Room ID is required" }),
   }),
-  action: async ({ body }) => {
+
+  action: async (source, request) => {
+    // Extract query parameters directly from the request
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
+
+    // Check if 'id' exists in the query parameters
+    if (!id || id.trim().length === 0) {
+      return Response.json(
+        { error: "Room ID is required" },
+        { status: 400 }
+      );
+    }
+
     const session = await auth();
 
     if (!session?.user || !hasPermission(session.user.role as any, "room", "delete")) {
@@ -26,7 +39,7 @@ export const { DELETE } = defineRoute({
     }
 
     try {
-      const deletedRoom = await deleteRoomAction(body.id);
+      const deletedRoom = await deleteRoomAction(id);
 
       if (!deletedRoom) {
         return Response.json({ error: "Room not found" }, { status: 404 });
@@ -41,13 +54,15 @@ export const { DELETE } = defineRoute({
       );
     }
   },
+
   responses: {
     200: { description: "Room deleted successfully", content: "" },
-    400: { description: "Invalid request body" },
+    400: { description: "Invalid request parameters" },
     403: { description: "Forbidden" },
     404: { description: "Room not found" },
     500: { description: "Error deleting room" },
   },
+
   handleErrors: (errorType) => {
     switch (errorType) {
       case "UNKNOWN_ERROR":
