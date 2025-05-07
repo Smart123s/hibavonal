@@ -8,7 +8,7 @@ export async function deleteRoomAction(id: string) {
   try {
     const session = await auth();
     
-    // Check that user and role are present
+  
     const role = session?.user?.role;
     if (!session?.user || !role || !hasPermission(session.user.role as Role, "room", "delete")) {
       throw new Error("You do not have permission to delete rooms.");
@@ -27,8 +27,10 @@ export async function deleteRoomAction(id: string) {
     });
 
     return deletedRoom;
-  } catch (error: any) {
-    console.error("Error during room deletion:", error);
-    throw new Error(error.message || "Error deleting room");
+  } catch (error: unknown) {
+      const message =
+      error instanceof Error ? error.message : 'Something went wrong during deletion';
+  
+    alert(message);
   }
 }

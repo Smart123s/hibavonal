@@ -1,5 +1,6 @@
 import defineRoute from "@omer-x/next-openapi-route-handler";
-import { z } from "zod";
+
+import { Role } from "@prisma/client";
 import { deleteRoomAction } from "@/app/dashboard/roomaction/roomdelete/action";
 import { auth } from "@/auth";
 import { hasPermission } from "@/utils/permissions";
@@ -11,13 +12,10 @@ export const { DELETE } = defineRoute({
   description: "Deletes a room by ID if it exists.",
   tags: ["Rooms"],
 
-  queryParams: z.object({
-    id: z.string().min(1, { message: "Room ID is required" }),
-  }),
 
   action: async (source, request) => {
-    const url = new URL(request.url);
-    const id = url.searchParams.get("id");
+    const { id } = await request.json();
+
     if (!id || id.trim().length === 0) {
       return Response.json(
         { error: "Room ID is required" },
@@ -27,7 +25,7 @@ export const { DELETE } = defineRoute({
 
     const session = await auth();
 
-    if (!session?.user || !hasPermission(session.user.role as any, "room", "delete")) {
+    if (!session?.user || !hasPermission(session.user.role as Role, "room", "delete")) {
       return Response.json(
         { error: "You do not have permission to delete rooms." },
         { status: 403 }
@@ -42,7 +40,7 @@ export const { DELETE } = defineRoute({
       }
 
       return Response.json({ success: true, data: deletedRoom }, { status: 200 });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error deleting room:", err);
       return Response.json(
         { error: "Internal Server Error while deleting room." },

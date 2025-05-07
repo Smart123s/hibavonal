@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Badge,
   Button,
   Card,
   Group,
@@ -10,7 +9,7 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { loadErrorTypeData, updateErrorData, ErrorTypeData } from "./action";
+import { loadErrorTypeData,  ErrorTypeData } from "./action";
 
 export default function ViewErrorTypePage({
   params,
@@ -32,7 +31,7 @@ export default function ViewErrorTypePage({
         setSeverity(d.errorType.severity.toString());
       }
     });
-  }, []);
+  }, [p.id]);
 
   const handleSave = async () => {
     setErrorMessage("");
@@ -57,9 +56,12 @@ export default function ViewErrorTypePage({
       }
 
       alert("Error updated successfully!");
-    } catch (error: any) {
-      console.error("Error updating:", error);
-      setErrorMessage(error.message || "Failed to update.");
+    } catch (error: unknown) {
+      const message =
+    error instanceof Error ? error.message : "Failed to update.";
+
+  setErrorMessage(message);
+  
     }
   };
 

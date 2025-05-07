@@ -22,28 +22,25 @@ const RoomDeletePage = () => {
       alert('Room ID is invalid or missing');
       return;
     }
-
+  
     try {
-      const response = await fetch('/api/errortypes/delete', {
+      const response = await fetch(`/api/errortypes/delete?id=${roomId}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: roomId }),
       });
-
+  
       const result = await response.json();
-
+  
       if (!response.ok) {
         const message = result?.error || 'Failed to delete error type';
         throw new Error(message);
       }
-
+  
       alert('Error type deleted successfully.');
       router.push('/dashboard/errortypes');
-    } catch (error: any) {
-      console.error('Error occurred:', error);
-      alert(error.message || 'Something went wrong during deletion');
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : 'Something went wrong during deletion';
+      alert(message);
     }
   };
 

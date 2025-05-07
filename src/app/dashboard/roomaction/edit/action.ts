@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { hasPermission } from "@/utils/permissions";
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient, Role, RoomType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -33,11 +33,15 @@ export async function fetchAllStudents() {
     },
   });
 }
-
-export async function updateRoomData(id: string, roomData: any) {
+type RoomUpdateInput = {
+  name: string;
+  level: number;
+  roomType: RoomType;
+  assignedStudents: string[];
+};
+export async function updateRoomData(id: string, roomData: RoomUpdateInput) {
   const { name, level, roomType, assignedStudents } = roomData;
 
-  // Ensure the user has permission to edit room data
   const session = await auth();
   if (!session?.user || !hasPermission(session.user.role as Role, "room", "edit")) {
     throw new Error("You do not have permission to edit rooms.");

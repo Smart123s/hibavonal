@@ -1,5 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/prisma";
+import {  NextResponse } from "next/server";
 import { deleteRoomAction } from "@/app/dashboard/errortypes/delete/action";
 import defineRoute from "@omer-x/next-openapi-route-handler";
 import { z } from "zod";
@@ -41,9 +40,9 @@ export const { DELETE } = defineRoute({
   handleErrors: (errorType) => {
     switch (errorType) {
       case "UNKNOWN_ERROR":
-        return new Response(null, { status: 500 });
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
       default:
-        return new Response(null, { status: 400 });
+        return NextResponse.json({ error: "Bad request" }, { status: 400 });
     }
-  },
+  }
 });

@@ -19,7 +19,7 @@ const RoomDeletePage = () => {
   }, [searchParams]);
 
   const handleDelete = async () => {
-    setErrorMessage(null); // Clear old error
+    setErrorMessage(null);
     if (!roomId) {
       setErrorMessage("Room ID is invalid or missing.");
       return;

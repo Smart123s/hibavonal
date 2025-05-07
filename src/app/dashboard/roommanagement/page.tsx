@@ -14,9 +14,13 @@ import {
 } from "@mantine/core";
 import { Role } from "@prisma/client";
 import { hasPermission } from "@/utils/permissions";
-
+type Room = {
+  id: string;
+  name: string;
+  level?: string;
+};
 export default function HomePage() {
-  const [rooms, setRooms] = useState<any[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [role, setRole] = useState<Role | null>(null);
 
   useEffect(() => {

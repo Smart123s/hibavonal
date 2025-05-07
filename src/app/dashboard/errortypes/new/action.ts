@@ -31,11 +31,14 @@ export type ErrorTypeState =
         [key: string]: string;
       };
     };
-
+    type CreateErrorTypeFormInput = {
+      name: string;
+      severity: number;
+    };
 
 export async function createErrorTypeAction(
   prevState: ErrorTypeState | null,
-  formData: any 
+  formData: CreateErrorTypeFormInput 
 
 ): Promise<ErrorTypeState> {
   const formInput = formData;

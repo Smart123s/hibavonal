@@ -5,11 +5,35 @@ import { useSearchParams } from "next/navigation";
 import { fetchAllStudents, fetchRoomData } from "./action";
 import { Select, TextInput, Text, Button } from "@mantine/core";
 
+type Student = {
+  id: string;
+  name: string | null;
+  email: string | null;
+};
+
+type Room = {
+  id: string;
+  name: string;
+  level: number;
+  roomType: "Public" | "Private";
+  users: Student[];
+  equipments: unknown[];
+  tickets: unknown[];
+};
+
+type RoomUpdatePayload = {
+  id: string;
+  name: string;
+  level: number;
+  roomType: "Public" | "Private";
+  assignedStudents: string[];
+};
+
 export default function RoomEditPage() {
   const searchParams = useSearchParams();
-  const [roomData, setRoomData] = useState<any>(null);
+  const [roomData, setRoomData] = useState<Room | null>(null);
   const [studentDropdowns, setStudentDropdowns] = useState<string[]>([""]);
-  const [allStudents, setAllStudents] = useState<any[]>([]);
+  const [allStudents, setAllStudents] = useState<Student[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -19,14 +43,14 @@ export default function RoomEditPage() {
     fetchRoomData(id).then((data) => {
       if (data) {
         setRoomData(data);
-        const initialStudents = data.users.map((u: any) => u.id) || [];
+        const initialStudents = data.users.map((u) => u.id);
         setStudentDropdowns(initialStudents.length ? initialStudents : [""]);
       }
     });
 
     fetchAllStudents().then((data) => {
       if (data) {
-        setAllStudents(data || []);
+        setAllStudents(data);
       }
     });
   }, [searchParams]);
@@ -34,30 +58,28 @@ export default function RoomEditPage() {
   const handleStudentChange = (index: number, value: string) => {
     const newDropdowns = [...studentDropdowns];
     newDropdowns[index] = value;
-
     if (index === studentDropdowns.length - 1 && studentDropdowns.length < 4) {
       newDropdowns.push("");
     }
-
     setStudentDropdowns(newDropdowns);
   };
 
   const handleSave = async () => {
-    setErrorMessage(null); // Clear previous error message
-    try {
-      const updatedRoom = {
-        id: roomData.id,
-        name: roomData.name,
-        level: roomData.level,
-        roomType: roomData.roomType,
-        assignedStudents: studentDropdowns.filter((id) => id),
-      };
+    if (!roomData) return;
+    setErrorMessage(null);
 
+    const updatedRoom: RoomUpdatePayload = {
+      id: roomData.id,
+      name: roomData.name,
+      level: roomData.level,
+      roomType: roomData.roomType,
+      assignedStudents: studentDropdowns.filter((id) => id),
+    };
+
+    try {
       const response = await fetch("/api/rooms/edit", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedRoom),
       });
 
@@ -108,7 +130,9 @@ export default function RoomEditPage() {
         <Text>Room Type</Text>
         <Select
           value={roomData.roomType}
-          onChange={(value) => setRoomData({ ...roomData, roomType: value })}
+          onChange={(value) =>
+            setRoomData({ ...roomData, roomType: value as "Public" | "Private" })
+          }
           data={[
             { value: "Public", label: "Public" },
             { value: "Private", label: "Private" },
@@ -125,9 +149,9 @@ export default function RoomEditPage() {
             onChange={(value) => handleStudentChange(index, value || "")}
             data={[
               { value: "", label: "Select a student" },
-              ...allStudents.map((student: any) => ({
+              ...allStudents.map((student) => ({
                 value: student.id,
-                label: `${student.name} - ${student.email}`,
+                label: `${student.name || "No Name"} - ${student.email || "No Email"}`,
               })),
             ]}
             className="mb-2"
