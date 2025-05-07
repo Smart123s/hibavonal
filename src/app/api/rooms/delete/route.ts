@@ -11,17 +11,13 @@ export const { DELETE } = defineRoute({
   description: "Deletes a room by ID if it exists.",
   tags: ["Rooms"],
 
-  // Define queryParams to accept 'id' from query parameters
   queryParams: z.object({
     id: z.string().min(1, { message: "Room ID is required" }),
   }),
 
   action: async (source, request) => {
-    // Extract query parameters directly from the request
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
-
-    // Check if 'id' exists in the query parameters
     if (!id || id.trim().length === 0) {
       return Response.json(
         { error: "Room ID is required" },

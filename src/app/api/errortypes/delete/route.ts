@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/prisma";
 import { deleteRoomAction } from "@/app/dashboard/errortypes/delete/action";
 import defineRoute from "@omer-x/next-openapi-route-handler";
-import { z } from "zod"; // Import Zod for validation
+import { z } from "zod";
 
 export const { DELETE } = defineRoute({
   operationId: "deleteRoom",
