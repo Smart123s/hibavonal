@@ -116,7 +116,7 @@ model Ticket {
   assignedUserId String?
   typeId         String?
   roomId         String?
-  errorTypeId    String?  @unique
+  errorTypeId    String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -127,7 +127,7 @@ model Ticket {
   assignedUser User? @relation("AssignedTickets", fields: [assignedUserId], references: [id], onDelete: SetNull)
   room         Room?  @relation("TicketRoom", fields: [roomId], references: [id], onDelete: SetNull)
 
-  errorType ErrorType? @relation(fields: [errorTypeId], references: [id], onDelete: SetNull)
+  errorType ErrorType? @relation(fields: [errorTypeId], references: [id])
 }
 
 model TicketType {
@@ -194,5 +194,5 @@ model ErrorType{
   name        String
   severity    Int
 
-  ticket   Ticket? @relation
+  tickets   Ticket[]
 }
