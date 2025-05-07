@@ -76,7 +76,7 @@ export default function NewRoomPage() {
 
       {errors && Object.values(errors).length > 0 && (
         <Alert color="red" mb="md" title="Error creating room">
-          {Object.entries(errors).map(([key, messages], index) => (
+          {Object.entries(errors).map(([, messages], index) => (
             <div key={index}>
               {messages.map((msg, i) => (
                 <div key={i}>{msg}</div>

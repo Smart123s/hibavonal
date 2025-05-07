@@ -93,13 +93,13 @@ const permissions: {
     } as RolePermissions,
 };
 
-interface Permission {
+/*interface Permission {
     create?: boolean;
     read?: boolean;
     readAll?: boolean;
     delete?: boolean;
     edit?: boolean;
-}
+}*/
 type Permissions = typeof permissions;
 
 

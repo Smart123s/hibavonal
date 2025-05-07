@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import RedirectButton from "@/app/components/redirectButton";
 import {
-  Badge,
   Card,
   Group,
   Text,
